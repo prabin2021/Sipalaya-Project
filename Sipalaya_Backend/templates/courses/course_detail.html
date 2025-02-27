@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="course-detail">
+    <h2>{{ course.title }}</h2>
+    <p><strong>Category:</strong> {{ course.category.name }}</p>
+    <p><strong>Instructor:</strong> {{ course.instructor.name }}</p>
+    <p><strong>Duration:</strong> {{ course.duration }}</p>
+    <p><strong>Fee:</strong> Rs {{ course.fee }}</p>
+    <p><strong>Description:</strong> {{ course.description }}</p>
+
+    <p><strong>Syllabus:</strong></p>
+    <ul>
+        {% for item in syllabus_items %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+    
+    <p><strong>Prerequisites:</strong></p>
+    <ul>
+        {% for prerequisite in prerequisites %}
+            <li>{{ prerequisite }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'course_list' %}" class="btn">Back to Courses</a>
+</div>
+{% endblock %}

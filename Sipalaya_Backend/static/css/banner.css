@@ -1,0 +1,21 @@
+.banner img {
+    display: block !important;
+    visibility: visible !important;
+    max-width: 100%;  
+}
+.banner {
+    position: relative;
+    z-index: 10;
+}
+
+.banner {
+    min-height: 300px;
+    overflow: visible;
+}
+.banner img {
+    width: auto;
+    height: auto;
+}
+.slide {
+    position: relative;
+}

@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <title>{% block title %}Sipalay Infotech{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <link rel="stylesheet" href=" {% static 'css/header-footer.css' %}">
+    <link rel="stylesheet" href=" {% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/courses_css.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home_css.css' %}">
+    <link rel="stylesheet" href="{% static 'css/banner.css' %}">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <a href="#">
+                <h1>Sipalaya Infotech</h1>
+                <p>Education is a right, not a privilege.</p>
+            </a>
+        </div>
+        <nav>
+            <!-- <div class="toggle-button">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div> -->
+            <div class="close-button"></div>
+            <ul>
+                <li>
+                    <a href="{% url 'homepage' %}">Home</a>
+                </li>
+                <li>
+                    <a href="#About">About</a>
+                </li>
+                <li>
+                    <a href="{% url 'course_list' %}">Courses</a>
+                </li>
+                <li>
+                    <a href="#Gallery">Gallery</a>
+                </li>
+                <li>
+                    <a href="#Contact">Contact</a>
+                </li>
+            </ul>
+            <div class="searchbar">
+                <form action="{% url 'search_courses' %}" method="GET">
+                    <input type="text" name="q" placeholder="Search for courses..." required>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        <!-- Child templates will insert their content here -->
+        {% endblock %}
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="row">
+                <div class="footer-col">
+                    <h4>Sipalaya Infotech, Kathmandu</h4>
+                    <ul>
+                        <li><a href="{% url 'homepage' %}">Home</a></li>
+                        <li><a href="#About">About us</a></li>
+                        <li><a href="#Contact">Contact</a></li>
+                        <li><a href="#Gallery">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>follow us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="creator">
+                <span>Created by Prabin | &copy; 2023 |</span>
+            </div>
+        </div>
+    </footer>
+    <script src=" {% static 'script/nav-menu.js' %}"></script>
+    <script src="{% static 'script/banner.js' %}" defer></script>
+</body>
+
+</html>

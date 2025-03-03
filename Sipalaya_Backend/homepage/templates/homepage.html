@@ -2,12 +2,11 @@
 {% extends 'base.html' %}
 {% block content %}
     <section class="banner-slider">
-        <p> {{ banners }}</p>
+        
         {% for banner in banners %}
             <div class="slide">
                 <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="max-width: 100%; height: auto;">
-
-                <p>{{ banner.image }}</p>
+                
                 <h2>{{ banner.title }}</h2>
                 <p>{{ banner.description }}</p>
                 {% if banner.link %}<a href="{{ banner.link }}" class="btn">Learn More</a>{% endif %}

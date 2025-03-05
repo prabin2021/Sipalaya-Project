@@ -15,18 +15,22 @@
 
 <body>
     <header>
-        <div class="logo">
-            <a href="#">
-                <h1>Sipalaya Infotech</h1>
-                <p>Education is a right, not a privilege.</p>
+            <a href="{% url 'homepage' %}">
+                <img src="{% static 'img/logo.png' %}" alt="Sipalay Infotech Logo" style="height: 70px;">
             </a>
-        </div>
+        
         <nav>
-            <!-- <div class="toggle-button">
+            <div class="searchbar">
+                <form action="{% url 'search_courses' %}" method="GET">
+                    <input type="text" name="q" placeholder="Search for courses..." required>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <div class="toggle-button">
                 <div class="bar"></div>
                 <div class="bar"></div>
                 <div class="bar"></div>
-            </div> -->
+            </div>
             <div class="close-button"></div>
             <ul>
                 <li>
@@ -45,16 +49,11 @@
                     <a href="#Contact">Contact</a>
                 </li>
             </ul>
-            <div class="searchbar">
-                <form action="{% url 'search_courses' %}" method="GET">
-                    <input type="text" name="q" placeholder="Search for courses..." required>
-                    <button type="submit">Search</button>
-                </form>
-            </div>
+        
         </nav>
     </header>
     <main>
-        <section class="banner-slider">
+        <section class="banner-slider" width="600" height="450">
             
             {% for banner in banners %}
                 <div class="slide">
@@ -64,8 +63,6 @@
                     <p>{{ banner.description }}</p>
                     {% if banner.link %}<a href="{{ banner.link }}" class="btn">Learn More</a>{% endif %}
                 </div>
-                {% empty %}
-                <p>No banners available.</p>
             {% endfor %}
         </section>
     
@@ -78,16 +75,32 @@
                         <h3>{{ feature.title }}</h3>
                         <p>{{ feature.description }}</p>
                     </div>
-                {% empty %}
-                    <p>No features available.</p>
+                
                 {% endfor %}
             </div>
         </section>
         {% block content %}
+        <h3 style="margin: 20px; text-align: center;padding: 1%;">Our Location:</h3>
+        <div class="google-map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3534.846015291258!2d85.3431704!3d27.671523!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb190536c1caa7%3A0xf92fcf603dac3960!2sSipalaya%20Info%20Tech%20Pvt.%20Ltd.!5e0!3m2!1sen!2sus!4v1681906070418!5m2!1sen!2sus" width="600" height="450"
+             style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
         <!-- Child templates will insert their content here -->
         {% endblock %}
     </main>
-    
+    <section id="Contact" class="contact-section">
+        <h2>Contact Us</h2>
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fa fa-envelope"></i>
+                <a href="mailto:infotech@sipalaya.com">infotech@sipalaya.com</a>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <a href="tel:+977 985-1344071">+977 985-1344071</a>
+            </div>
+            
+        </div>
     <footer class="footer">
         <div class="footer-container">
             <div class="row">
@@ -101,6 +114,7 @@
                     </ul>
                 </div>
                 <div class="footer-col">
+                    
                     <h4>follow us</h4>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -111,10 +125,13 @@
             </div>
             
             <div class="creator">
-                <span>Created by Prabin | &copy; 2023 |</span>
+                <span>Created by Prabin | &copy; 2025 |</span>
             </div>
         </div>
     </footer>
+    <script>
+         
+    </script>
     <script src="{% static 'script/nav-menu.js' %}"></script>
     <script src="{% static 'script/banner.js' %}" defer></script>
 </body>

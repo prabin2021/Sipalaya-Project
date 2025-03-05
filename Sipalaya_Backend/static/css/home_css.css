@@ -2,14 +2,14 @@ body {
     font-family: Arial, sans-serif;
 }
 
-.banner .slide {
+/* .banner .slide {
     text-align: center;
 }
 
 .banner img {
     width: 100%;
     height: auto;
-}
+} */
 
 .feature-list {
     display: flex;

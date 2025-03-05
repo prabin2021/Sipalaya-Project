@@ -12,28 +12,34 @@ header {
     top: 0;
     z-index: 3;
     width: 100%;
-    
   }
   .logo a {
-    text-decoration: none;
-    color: #24262b;
-  }
-  .logo a:hover{
-    color: #24262b91;
-    transition: 1s;
-  }
-  
-  .logo a h1 {
-    font-size: 1.5rem;
-    text-transform: uppercase;
-  }
-  
-  .logo a p {
-    font-size: 0.875rem;
-    font-weight: 550;
-    text-transform: uppercase; 
-  }
-  
+    display: flex;          /* Use flexbox to align children in a row */
+    align-items: center;    /* Center vertically */
+    text-decoration: none;  /* Remove underline from the link */
+}
+
+.logo img {
+    height: 60px;           /* Adjust the height as needed */
+    width: auto;
+}
+
+.logo-text {
+    margin-left: 10px;      /* Space between the image and text */
+    color: inherit;         /* Inherit text color if necessary */
+}
+
+/* Optional: style the text further if needed */
+.logo-text h1 {
+    margin: 0;
+    font-size: 1.5rem;      /* Adjust the font size as needed */
+}
+
+.logo-text p {
+    margin: 0;
+    font-size: 0.9rem;      /* Adjust the font size as needed */
+}
+
   nav {
     height: 3.75rem;
     background: #ffffff;
@@ -167,7 +173,70 @@ header {
     }
   
   }
-  
+  .searchbar {
+    display: flex;
+    align-items: center;
+}
+
+.searchbar form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.searchbar input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+    transition: 0.3s;
+}
+
+.searchbar input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Search button */
+.searchbar button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.searchbar button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: center;
+    }
+
+    .logo-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .searchbar {
+        margin-top: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .searchbar input {
+        width: 80%; /* Take more width on small screens */
+    }
+}
+
   /*------------------------------------------------------------------------------------------------------------------------------------------*/
   /*------------------------------------------------footer design-----------------------------------------------------------------------------*/
   
@@ -297,4 +366,4 @@ header {
       font-size: 0.38.5rem;
     }
   }
- 
+  

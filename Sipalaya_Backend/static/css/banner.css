@@ -1,41 +1,81 @@
-/* .banner img {
-    display: block !important;
-    visibility: visible !important;
-    max-width: 100%;  
-}
-.banner {
-    position: relative;
-    z-index: 10;
-}
-
-.banner {
-    min-height: 300px;
-    overflow: visible;
-}
-.banner img {
-    width: auto;
-    height: auto;
-}
-.slide {
-    position: relative;
-} */
-
-.banner {
-    width: 100%;
-    height: 500px; /* Adjust as needed */
-    overflow: hidden;  
-    position: relative;
-}
-
-.banner img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensures the image covers the full banner */
-}
-
+/* Banner slider container */
 .banner-slider {
+    width: 100vw; /* Full width */
+    min-height: 60vh; /* Min height for mobile view */
+    max-height: 80vh; /* Max height for mobile responsiveness */
     border: 2px solid rgb(77, 78, 185);
     background-color: rgba(255, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align content at the top */
+    flex-direction: column;
 }
+
+/* Slide content wrapper */
+.slide {
+    width: 100%;
+    height: auto; /* Allow flexible height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Ensure content stays at the top */
+    text-align: center;
+    position: relative; /* Adjust position */
+    padding-top: 50px; /* Add padding to move content down a little */
+}
+
+/* Image styling */
+.slide img {
+    width: 100%;
+    height: auto; /* Auto height to maintain aspect ratio */
+    max-height: 500px; /* Adjust the image size */
+    object-fit: cover;
+}
+
+/* Text content styling */
+.slide h2,
+.slide p,
+.slide a {
+    position: relative;
+    z-index: 2; /* Ensure text is on top */
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin-top: 10px;
+    display: block; /* Makes elements block-level so they stack vertically */
+    width: 80%; /* Set fixed width to control background box size */
+    max-width: 600px; /* Maximum width for content */
+    align-items: center;
+}
+
+/* Fix for PC View (larger screens) */
+@media (min-width: 1024px) {
+    .banner-slider {
+        min-height: 80vh; /* Increase the height for PC to make space for both image and content */
+        max-height: 100vh; /* Ensure we have enough space for content */
+    }
+    
+    .slide img {
+        max-height: 400px; /* Reduce the image size */
+    }
+    
+    .slide {
+        align-items: center;
+        justify-content: flex-start; /* Ensure content stays at the top */
+        padding-top: 30px; /* Reduce padding for better space usage */
+    }
+
+    .slide h2,
+    .slide p,
+    .slide a {
+        padding: 25px 40px; /* Further adjust padding for more space */
+        width: 70%; /* Make the width a little smaller in PC view */
+        max-width: 700px; /* Increase max width */
+        align-items: center;
+    }
+}
+
 

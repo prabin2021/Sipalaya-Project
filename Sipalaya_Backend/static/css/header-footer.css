@@ -39,6 +39,9 @@ header {
     margin: 0;
     font-size: 0.9rem;      /* Adjust the font size as needed */
 }
+.close-button {
+  display: none; /* Hide by default */
+}
 
   nav {
     height: 3.75rem;

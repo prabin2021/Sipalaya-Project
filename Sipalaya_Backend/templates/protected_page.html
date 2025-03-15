@@ -3,7 +3,9 @@
 <html>
 {% load static %}
 <head>
-    <title>{% block title %}Sipalay Infotech{% endblock %}</title>
+    <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}">
+        <h1 class="site-title">Sipalaya Infotech</h1>
+    </a>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
     <link rel="stylesheet" href=" {% static 'css/header-footer.css' %}">
@@ -15,7 +17,7 @@
 
 <body>
     <header>
-            <a href="{% url 'homepage' %}">
+            <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}">
                 <img src="{% static 'img/logo.png' %}" alt="Sipalay Infotech Logo" style="height: 70px;">
             </a>
         
@@ -34,10 +36,10 @@
             <div class="close-button"></div>
             <ul>
                 <li>
-                    <a href="{% url 'homepage' %}">Home</a>
+                    <a href="{% url 'protected_page' %}">Home</a>
                 </li>
                 <li>
-                    <a href="#About">About</a>
+                    <a href="{% url 'about' %}">About</a>
                 </li>
                 <li>
                     <a href="{% url 'course_list' %}">Courses</a>
@@ -112,8 +114,8 @@
                 <div class="footer-col">
                     <h4>Sipalaya Infotech, Kathmandu</h4>
                     <ul>
-                        <li><a href="{% url 'homepage' %}">Home</a></li>
-                        <li><a href="#About">About us</a></li>
+                        <li><a href="{% url 'protected_page' %}">Home</a></li>
+                        <li><a href="{% url 'about' %}">About us</a></li>
                         <li><a href="#Contact">Contact</a></li>
                         <li><a href="#Gallery">Gallery</a></li>
                     </ul>

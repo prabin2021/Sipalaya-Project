@@ -24,14 +24,14 @@ def search_view(request):
 
 def user_login(request):
     if request.user.is_authenticated:
-        return redirect('home')  # Redirect logged-in users
+        return redirect('protected_page.html')  # Redirect logged-in users
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')  # Redirect after successful login
+            return redirect('protected_page')  # Redirect after successful login
     else:
         form = AuthenticationForm()
 
@@ -39,14 +39,14 @@ def user_login(request):
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect('protected_page')  # Redirect if already logged in
+        return redirect('protected_page.html')  # Redirect if already logged in
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # Log the user in after signup
-            return redirect('protected_page')
+            return redirect('protected_page.html')
     else:
         form = UserCreationForm()
 
@@ -54,4 +54,14 @@ def signup(request):
 
 def user_logout(request):
     logout(request)
-    return redirect('base')
+    return redirect('base.html')
+
+@login_required(login_url='/auth/login/')
+def protected_page(request):
+    banners = Banner.objects.all()
+    features = Feature.objects.all()
+    context = {
+        'banners': banners,
+        'features': features,
+    }
+    return render(request, 'protected_page.html', context)

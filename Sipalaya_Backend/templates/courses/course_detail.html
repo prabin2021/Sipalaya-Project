@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if user.is_authenticated %}
+
 <div class="course-detail">
     <h2>{{ course.title }}</h2>
     <p><strong>Category:</strong> {{ course.category.name }}</p>
@@ -22,7 +24,10 @@
             <li>{{ prerequisite }}</li>
         {% endfor %}
     </ul>
-
+   
+    {% else %}
+    <a href="{% url 'login' %}">Login</a>
+{% endif %}
     <a href="{% url 'course_list' %}" class="btn">Back to Courses</a>
 </div>
 {% endblock %}

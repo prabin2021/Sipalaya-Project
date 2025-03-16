@@ -12,7 +12,10 @@ def homepage_view(request):
         'banners': banners,
         'features': features,
     }
-    return render(request, 'base.html', context)
+    if request.user.is_authenticated:
+        return render(request, 'protected_page.html',context)
+    else:
+        return render(request, 'base.html', context)
 
 def about(request):
     return render(request, 'about.html')
@@ -39,14 +42,14 @@ def user_login(request):
 
 def signup(request):
     if request.user.is_authenticated:
-        return redirect('protected_page.html')  # Redirect if already logged in
+        return redirect('protected_page')  # Redirect if already logged in
 
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # Log the user in after signup
-            return redirect('protected_page.html')
+            return redirect('protected_page')
     else:
         form = UserCreationForm()
 

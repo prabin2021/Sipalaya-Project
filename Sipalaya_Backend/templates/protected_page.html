@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{% static 'css/courses_css.css' %}">
     <link rel="stylesheet" href="{% static 'css/home_css.css' %}">
     <link rel="stylesheet" href="{% static 'css/banner.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+
 </head>
 
 <body>
@@ -45,7 +47,7 @@
                     <a href="{% url 'course_list' %}">Courses</a>
                 </li>
                 <li>
-                    <a href="#Gallery">Gallery</a>
+                    <a href="{% url 'contact' %}">Contact</a>
                 </li>
                 <li>
                     {% if user.is_authenticated %}
@@ -120,8 +122,8 @@
                     <ul>
                         <li><a href="{% url 'protected_page' %}">Home</a></li>
                         <li><a href="{% url 'about' %}">About us</a></li>
-                        <li><a href="#Contact">Contact</a></li>
-                        <li><a href="#Gallery">Gallery</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'course_list' %}">Courses</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">

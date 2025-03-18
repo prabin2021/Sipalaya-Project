@@ -4,7 +4,7 @@
 {% load static %}
 <head>
     <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}">
-        <h1 class="site-title">My Website</h1>
+        <h1 class="site-title">Sipalaya Infotech</h1>
     </a>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="{% static 'css/courses_css.css' %}">
     <link rel="stylesheet" href="{% static 'css/home_css.css' %}">
     <link rel="stylesheet" href="{% static 'css/banner.css' %}">
+    <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+
 </head>
 
 <body>
@@ -36,16 +38,16 @@
             <div class="close-button"></div>
             <ul>
                 <li>
-                    <a href="{% url 'homepage' %}">Home</a>
+                    <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}">Home</a>
                 </li>
                 <li>
-                    <a href="{% url 'about' %}">About </a>
+                    <a href="{% url 'about' %}">About</a>
                 </li>
                 <li>
                     <a href="{% url 'course_list' %}">Courses</a>
                 </li>
                 <li>
-                    <a href="#Gallery">Base</a>
+                    <a href="{% url 'contact' %}">Contact</a>
                 </li>
                 <li>
                     {% if user.is_authenticated %}
@@ -62,16 +64,19 @@
     <main>
         
         {% block content %}
-        <section class="banner-slider" width="600" height="450">
-            
+
+        <section class="banner-slider" >
             {% for banner in banners %}
                 <div class="slide">
+                    <div class="image">
                     <img src="{{ banner.image.url }}" alt="{{ banner.title }}" style="max-width: 100%; height: auto;">
-                    
+                </div>
+                <div class="desc">
                     <h2>{{ banner.title }}</h2>
                     <p>{{ banner.description }}</p>
                     {% if banner.link %}<a href="{{ banner.link }}" class="btn">Learn More</a>{% endif %}
                 </div>
+            </div>
             {% endfor %}
         </section>
     
@@ -115,10 +120,10 @@
                 <div class="footer-col">
                     <h4>Sipalaya Infotech, Kathmandu</h4>
                     <ul>
-                        <li><a href="{% url 'homepage' %}">Home</a></li>
+                        <li><a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}">Home</a></li>
                         <li><a href="{% url 'about' %}">About us</a></li>
-                        <li><a href="#Contact">Contact</a></li>
-                        <li><a href="#Gallery">Gallery</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'course_list' %}">Courses</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">

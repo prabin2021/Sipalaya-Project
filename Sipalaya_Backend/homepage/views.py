@@ -4,6 +4,9 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .models import Banner, Feature
 from courses.models import Course
+from django.http import HttpResponse
+from .models import Contact
+from .forms import ContactForm
 
 def homepage_view(request):
     banners = Banner.objects.all()
@@ -16,6 +19,24 @@ def homepage_view(request):
         return render(request, 'protected_page.html',context)
     else:
         return render(request, 'base.html', context)
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the form data to the database
+            return render(request, 'thanku.html', {
+                'form': form, 
+                'message': 'Thank you for contacting us! We will get back to you soon.'
+            })
+        else:
+            return render(request, 'contact.html', {
+                'form': form, 
+                'message': 'There was an error in your submission. Please try again.'
+            })
+    else:
+        form = ContactForm()
+    return render(request, 'contact.html', {'form': form})
 
 def about(request):
     return render(request, 'about.html')

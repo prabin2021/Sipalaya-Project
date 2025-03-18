@@ -3,79 +3,148 @@
     width: 100vw; /* Full width */
     min-height: 60vh; /* Min height for mobile view */
     max-height: 80vh; /* Max height for mobile responsiveness */
-    border: 2px solid rgb(77, 78, 185);
-    background-color: rgba(255, 0, 0, 0.1);
+    border: 2px solid rgb(111, 113, 242);
+    background-color: rgba(0, 0, 0, 0.1);
     overflow: hidden;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: flex-start; /* Align content at the top */
     flex-direction: column;
+    perspective: 1000px;
 }
 
 /* Slide content wrapper */
+.banner-slider {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
 .slide {
     width: 100%;
-    height: auto; /* Allow flexible height */
+    height: 100vh; /* Full viewport height */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Ensure content stays at the top */
+    justify-content: center; /* Center content */
     text-align: center;
-    position: relative; /* Adjust position */
-    padding-top: 50px; /* Add padding to move content down a little */
-}
-
-/* Image styling */
-.slide img {
-    width: 100%;
-    height: auto; /* Auto height to maintain aspect ratio */
-    max-height: 500px; /* Adjust the image size */
-    object-fit: cover;
-}
-
-/* Text content styling */
-.slide h2,
-.slide p,
-.slide a {
     position: relative;
-    z-index: 2; /* Ensure text is on top */
-    color: white;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 15px 20px;
-    border-radius: 5px;
-    margin-top: 10px;
-    display: block; /* Makes elements block-level so they stack vertically */
-    width: 80%; /* Set fixed width to control background box size */
-    max-width: 600px; /* Maximum width for content */
+    padding: 20px;
+    
+    opacity: 0;
+    transform: scale(1) translateX(100%); /* Start off-screen */
+    transition: transform 1.5s ease-in-out, opacity 1.5s ease-in-out; /* Smooth zoom and slide */
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+    transform: rotateY(90deg);
+    opacity: 0;
+    transition: transform 1.5s ease-in-out, opacity 1s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: rotateY(0deg);
+}
+.image {
+    width: 100%;
+    height: 100%; /* Make it full height */
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
-/* Fix for PC View (larger screens) */
-@media (min-width: 1024px) {
+.image img {
+    width: 100%;
+    height: 100vh; /* Adjust height dynamically */
+    object-fit: cover; /* Ensure it covers properly */
+}
+
+.desc {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 80%;
+    max-width: 800px;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.desc h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.desc p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}
+
+.btn {
+    display: inline-block;
+    background: #ff6600;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #e65c00;
+}
+@media (max-width: 768px) {
     .banner-slider {
-        min-height: 80vh; /* Increase the height for PC to make space for both image and content */
-        max-height: 100vh; /* Ensure we have enough space for content */
-    }
-    
-    .slide img {
-        max-height: 400px; /* Reduce the image size */
-    }
-    
-    .slide {
-        align-items: center;
-        justify-content: flex-start; /* Ensure content stays at the top */
-        padding-top: 30px; /* Reduce padding for better space usage */
+        min-height: 70vh; /* Reduce height for mobile screens */
     }
 
-    .slide h2,
-    .slide p,
-    .slide a {
-        padding: 25px 40px; /* Further adjust padding for more space */
-        width: 70%; /* Make the width a little smaller in PC view */
-        max-width: 700px; /* Increase max width */
+    .slide {
+        height: 70vh; /* Make the slide smaller to fit mobile screens */
+        padding: 10px; /* Reduce padding for better spacing */
+        justify-content: center; /* Center content */
+    }
+
+    .image {
+        height: 70vh; /* Keep image height proportional */
+        display: flex;
         align-items: center;
+        justify-content: center;
+    }
+
+    .image img {
+        width: 100%;
+        height: 70vh; /* Reduce height for better fit */
+        object-fit: cover; /* Prevent distortion */
+    }
+
+    .desc {
+        width: 90%; /* Make text box wider on mobile */
+        padding: 15px; /* Reduce padding for better spacing */
+        font-size: 14px; /* Slightly smaller text */
+    }
+
+    .desc h2 {
+        font-size: 1.8rem; /* Reduce heading size */
+    }
+
+    .desc p {
+        font-size: 1rem; /* Reduce paragraph size */
+    }
+
+    .btn {
+        padding: 8px 16px; /* Adjust button size */
+        font-size: 1rem;
     }
 }
 
 
+/* done */

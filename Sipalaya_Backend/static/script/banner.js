@@ -1,17 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
     let slides = document.querySelectorAll(".slide");
-    let index = 0;
+    let currentIndex = 0;
 
-    function showSlide(i) {
-        slides.forEach(slide => slide.style.display = "none");
-        slides[i].style.display = "block";
+    function changeSlide() {
+        let prevIndex = currentIndex;
+        currentIndex = (currentIndex + 1) % slides.length;
+
+        slides[prevIndex].classList.remove("active");
+        slides[prevIndex].classList.add("prev"); // Move out of view
+        slides[currentIndex].classList.add("active");
+
+        // Remove "prev" class after animation to prevent stacking issues
+        setTimeout(() => slides[prevIndex].classList.remove("prev"), 1500);
     }
 
-    function nextSlide() {
-        index = (index + 1) % slides.length;
-        showSlide(index);
-    }
-
-    showSlide(index);
-    setInterval(nextSlide, 3000);  // Rotate every 3 seconds
+    slides[currentIndex].classList.add("active"); // Show the first slide
+    setInterval(changeSlide, 3000); // Change every 3 seconds
 });

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/home_css.css' %}">
     <link rel="stylesheet" href="{% static 'css/banner.css' %}">
     <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/stud_dashboard.css' %}">
 
 </head>
 
@@ -120,7 +121,11 @@
                 <div class="footer-col">
                     <h4>Sipalaya Infotech, Kathmandu</h4>
                     <ul>
-                        <li><a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}">Home</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'stud_dashboard' %}">Dashboard</a></li>
+                        {% else %}
+                            <li><a href="{% url 'homepage' %}">Home</a></li>
+                        {% endif %}
                         <li><a href="{% url 'about' %}">About us</a></li>
                         <li><a href="{% url 'contact' %}">Contact</a></li>
                         <li><a href="{% url 'course_list' %}">Courses</a></li>

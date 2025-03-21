@@ -8,6 +8,8 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # path('',views.basehome,name="basehome"),
     path('courses/', include('courses.urls')),
+    path('stud_portal/', include('stud_portal.urls')),
+   
     path('', include('homepage.urls')),
     
 ]

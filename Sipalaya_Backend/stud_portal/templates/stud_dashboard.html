@@ -10,6 +10,9 @@
     <li><strong>ID:</strong> {{ user.id }}</li>
     <li><strong>Name:</strong> {{ user.username }}</li>
     <li><strong>Email:</strong> {{ user.email }}</li>
+    <li><strong>Phone:</strong> {{ student_profile.phone }}</li>
+    <li><strong>Address:</strong> {{ student_profile.address }}</li>
+    <li><strong>Gender:</strong> {{ student_profile.get_gender_display }}</li>
 </ul>
 
 <h2>Enrolled Courses</h2>

@@ -8,6 +8,24 @@ from courses.models import Course
 #     def __str__(self):
 #         return self.title
 
+class StudentProfile(models.Model):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    full_name = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, null=True)
+    has_completed_profile = models.BooleanField(default=False)  # Track if student filled details
+
+    def __str__(self):
+        return self.full_name if self.full_name else self.user.username
+
 class EnrolledCourse(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)  # ✅ Ensure ForeignKey exists

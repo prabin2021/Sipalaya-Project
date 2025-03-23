@@ -1,41 +1,228 @@
 {% extends 'protected_page.html' %}
+{% load static %}
 {% block title %}About Us{% endblock %}
 
 {% block content %}
-    <div class="text-center">
-        <h1>About Us</h1>
-        <p>Learn more about our company.</p>
-    </div>
     <style>
-        .about-container {
-            text-align: center;
-            padding: 50px;
+        /* Reset and base styles */
+        body, h1, h2, h3, p, ul {
+            margin: 0;
+            padding: 0;
         }
-        
-        .about-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 800px;
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f7fc;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: none;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
-        
-        .about-section img {
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            text-align: center;
+            padding: 80px 20px;
+            margin-bottom: 40px;
+        }
+        .hero-section h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .hero-section p {
+            font-size: 1.2em;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: #343a40;
+            text-transform: uppercase;
+        }
+
+        .section-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .section-content div {
+            flex: 1;
+            min-width: 280px;
+        }
+
+        /* Image Styling */
+        .about-image {
             width: 100%;
-            max-width: 500px;
+            width: 70%; /* Adjust the width as needed (percentage or fixed value like px) */
+            max-width: 500px; /* Optional: Limit the maximum width */
+            height: auto;
             border-radius: 10px;
-            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+         
         }
-        
-        @media (min-width: 1024px) {
-            .about-section {
-                flex-direction: row;
-                text-align: left;
-            }
-            .about-section img {
-                margin-right: 20px;
-            }
+
+        /* Core Values Section */
+        .values {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
-        </style>
-        
+
+        .value-item {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            background-color: #ffffff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .value-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .value-item h3 {
+            color: #343a40;
+            margin-bottom: 10px;
+        }
+
+        .value-item p {
+            color: #6c757d;
+        }
+
+        /* Team Section */
+        .team-members {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .team-member {
+            text-align: center;
+            width: 200px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: #ffffff;
+        }
+
+        .team-member img {
+            width: 100%;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        .team-member h4 {
+            margin-bottom: 10px;
+            color: #343a40;
+        }
+
+        .team-member p {
+            color: #6c757d;
+        }
+
+    </style>
+
+    <!-- Hero Section with Gradient Background -->
+    <section class="hero-section">
+        <h1>Welcome to Sipalaya InfoTech</h1>
+        <p>Empowering Careers Through IT Training</p>
+    </section>
+
+    <!-- Who We Are Section -->
+    <section>
+        <h2 class="section-title">Who We Are</h2>
+        <div class="section-content">
+            <div>
+                <p>Sipalaya InfoTech, located in Kathmandu, Nepal, has been dedicated to helping professionals and students advance their careers in the tech industry for years. We provide high-quality, comprehensive training programs that equip our students with the skills needed to excel in the fast-evolving tech world.</p>
+            </div>
+            <div>
+                <img class="about-image" src="{% static 'img/logo.png' %}" alt="Sipalaya InfoTech">
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Values Section -->
+    <section>
+        <h2 class="section-title">Our Core Values</h2>
+        <div class="values">
+            <div class="value-item">
+                <h3>Integrity</h3>
+                <p>We believe in doing the right thing, even when no one is looking. Our integrity is the foundation of everything we do.</p>
+            </div>
+            <div class="value-item">
+                <h3>Excellence</h3>
+                <p>We strive for excellence in everything we do. Our programs and services are designed to exceed expectations and empower our students to achieve their best.</p>
+            </div>
+            <div class="value-item">
+                <h3>Innovation</h3>
+                <p>We are committed to staying ahead of the curve by continually innovating and providing our students with the latest tools and techniques in the tech industry.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Team Section -->
+    <section>
+        <h2 class="section-title">Meet Our Team</h2>
+        <div class="team-members">
+            <div class="team-member">
+                <img src="{% static 'img/himalsir.jpeg' %}" alt="Team Member 1">
+                <h4>Himal Rawal</h4>
+                <p>Founder & CEO</p>
+            </div>
+            <div class="team-member">
+                <img src="{% static 'img/me.jpg' %}" alt="Team Member 2">
+                <h4>Prabin Sigdel</h4>
+                <p>Lead Instructor</p>
+            </div>
+            <div class="team-member">
+                <img src="{% static 'img/dad.jpg' %}" alt="Team Member 3">
+                <h4>Hari Prasad Sigdel</h4>
+                <p>Chief Technology Officer</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission & Vision Section -->
+    <section>
+        <h2 class="section-title">Our Mission & Vision</h2>
+        <div class="section-content">
+            <div>
+                <h3>Mission</h3>
+                <p>To provide high-quality, comprehensive IT training and development programs that empower professionals and students to advance their careers and achieve their goals.</p>
+            </div>
+            <div>
+                <h3>Vision</h3>
+                <p>To be the leading provider of IT training and development programs, recognized for our commitment to excellence and our ability to help students succeed in the tech industry.</p>
+            </div>
+        </div>
+    </section>
+
 {% endblock %}

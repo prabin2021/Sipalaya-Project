@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import EnrolledCourse, CompletedLesson, Assignment, Attendance
 from django.contrib import messages
-
+from .models import StudentProfile
+from .forms import StudentProfileForm
+from django.urls import reverse
 # 📌 **Student Dashboard: View enrolled courses, progress, and certificates**
 # def student_dashboard(request):
 #     enrolled_courses = EnrolledCourse.objects.filter(student=request.user)
@@ -20,21 +22,44 @@ from django.contrib import messages
     
 #     return render(request, 'stud_dashboard.html', {'course_details': course_details})
 
-def student_dashboard(request):
-    if request.user.is_authenticated:
-        user = request.user
-        enrolled_courses = EnrolledCourse.objects.filter(student=user)
-        attendance_records = Attendance.objects.filter(student=user)
-        assignments = Assignment.objects.filter(student=user)
-        context = {
-            'user': user,
-            'enrolled_courses': enrolled_courses,
-            'attendance_records': attendance_records,
-            'assignments': assignments,
-        }
-        return render(request, 'stud_dashboard.html', context)
+@login_required
+def complete_profile(request):
+    student_profile, created = StudentProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = StudentProfileForm(request.POST, instance=student_profile)
+        if form.is_valid():
+            student_profile.has_completed_profile = True  # Mark profile as completed
+            form.save()
+            return redirect(reverse('stud_dashboard'))
+
     else:
-        return redirect('login')
+        form = StudentProfileForm(instance=student_profile)
+
+    return render(request, 'complete_profile.html', {'form': form})
+
+@login_required
+def student_dashboard(request):
+    user = request.user
+    student_profile, created = StudentProfile.objects.get_or_create(user=request.user)
+    enrolled_courses = EnrolledCourse.objects.filter(student=user)
+    attendance_records = Attendance.objects.filter(student=user)
+    assignments = Assignment.objects.filter(student=user)
+    if not student_profile.has_completed_profile:
+        # Redirect to profile setup page if not completed
+        return redirect('complete_profile')
+
+    # Fetch other details like enrolled courses, assignments, etc.
+    context = {
+        'user': request.user,
+        'student_profile': student_profile,
+        'enrolled_courses': enrolled_courses,
+        'attendance_records': attendance_records,
+        'assignments': assignments,
+        # Add enrolled courses, assignments, etc.
+    }
+    return render(request, 'stud_dashboard.html', context)
+
 
 # 📌 **Mark Lesson as Completed**
 @login_required

@@ -75,7 +75,7 @@
                 <div class="desc">
                     <h2>{{ banner.title }}</h2>
                     <p>{{ banner.description }}</p>
-                    {% if banner.link %}<a href="{{ banner.link }}" class="btn">Learn More</a>{% endif %}
+                    {% if banner.link %}<a href="{% url 'course_list' %}" class="btn">Learn More</a>{% endif %}
                 </div>
             </div>
             {% endfor %}

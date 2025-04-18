@@ -1,6 +1,13 @@
+
+import requests
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from django.conf import settings
+from .models import Course
 from django.shortcuts import render, get_object_or_404
 from .models import Course, Category
-
+from django.contrib.auth.decorators import login_required
+import json
 def course_list(request):
     courses = Course.objects.all()
     categories = Category.objects.all()

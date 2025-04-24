@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Course Details -->
+        <div class="col-md-8">
+            <div class="card">
+                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="card-img-top">
+                <div class="card-body">
+                    <h1 class="card-title">{{ course.title }}</h1>
+                    <p class="text-muted">By {{ course.instructor.get_full_name }}</p>
+                    
+                    <div class="course-meta mb-4">
+                        <span class="badge bg-primary me-2">{{ course.category.name }}</span>
+                        <span class="badge bg-secondary me-2">{{ course.level }}</span>
+                        <span class="badge bg-info">{{ course.duration }} weeks</span>
+                    </div>
+                    
+                    <div class="course-description mb-4">
+                        {{ course.description|safe }}
+                    </div>
+                    
+                    <h3>What You'll Learn</h3>
+                    <div class="course-learning mb-4">
+                        {{ course.what_you_will_learn|safe }}
+                    </div>
+                    
+                    <h3>Prerequisites</h3>
+                    <div class="course-prerequisites mb-4">
+                        {{ course.prerequisites|safe }}
+                    </div>
+                    
+                    <h3>Course Content</h3>
+                    <div class="course-content mb-4">
+                        {% for module in course.modules.all %}
+                        <div class="module mb-3">
+                            <h4>{{ module.title }}</h4>
+                            <p>{{ module.description }}</p>
+                            <ul class="list-group">
+                                {% for lesson in module.lessons.all %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ lesson.title }}
+                                    <span class="badge bg-primary rounded-pill">{{ lesson.duration }} min</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="card-title">${{ course.price }}</h3>
+                    {% if is_enrolled %}
+                    <a href="{% url 'courses:course_learn' course.slug %}" class="btn btn-success btn-lg w-100 mb-3">Continue Learning</a>
+                    {% else %}
+                    <a href="{% url 'courses:course_enroll' course.slug %}" class="btn btn-primary btn-lg w-100 mb-3">Enroll Now</a>
+                    {% endif %}
+                    
+                    <div class="course-features">
+                        <h4>This Course Includes:</h4>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-video me-2"></i> {{ course.modules.count }} Modules</li>
+                            <li><i class="fas fa-clock me-2"></i> {{ course.duration }} Weeks Duration</li>
+                            <li><i class="fas fa-certificate me-2"></i> Certificate of Completion</li>
+                            <li><i class="fas fa-download me-2"></i> Downloadable Resources</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Instructor</h4>
+                    <div class="instructor-info">
+                        {% if course.instructor.profile_picture %}
+                        <img src="{{ course.instructor.profile_picture.url }}" alt="{{ course.instructor.get_full_name }}" class="rounded-circle mb-3" width="100">
+                        {% endif %}
+                        <h5>{{ course.instructor.get_full_name }}</h5>
+                        <p class="text-muted">{{ course.instructor.bio|truncatewords:30 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reviews Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Student Reviews</h3>
+            <div class="row">
+                {% for review in course.reviews.all %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="rating mb-3">
+                                {% for i in "12345" %}
+                                <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% endif %}"></i>
+                                {% endfor %}
+                            </div>
+                            <p class="card-text">{{ review.comment }}</p>
+                            <p class="text-muted">- {{ review.enrollment.student.get_full_name }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p>No reviews yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if is_enrolled and not user_review %}
+            <div class="mt-4">
+                <h4>Write a Review</h4>
+                <form method="post" action="{% url 'courses:course_review' course.slug %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <select name="rating" id="rating" class="form-control" required>
+                            <option value="">Select Rating</option>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="2">2 Stars</option>
+                            <option value="1">1 Star</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

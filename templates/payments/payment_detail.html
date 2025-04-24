@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Details - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Payment Details</h2>
+                    
+                    <div class="payment-info">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Course Information</h5>
+                                <p><strong>Course:</strong> {{ payment.course.title }}</p>
+                                <p><strong>Instructor:</strong> {{ payment.course.instructor.get_full_name }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Payment Status</h5>
+                                <p>
+                                    <strong>Status:</strong>
+                                    <span class="badge {% if payment.status == 'COMPLETED' %}bg-success{% elif payment.status == 'PENDING' %}bg-warning{% elif payment.status == 'FAILED' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                        {{ payment.status }}
+                                    </span>
+                                </p>
+                                <p><strong>Date:</strong> {{ payment.created_at|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Payment Details</h5>
+                                <p><strong>Amount:</strong> ${{ payment.amount }}</p>
+                                <p><strong>Payment Method:</strong> {{ payment.get_payment_method_display }}</p>
+                                <p><strong>Transaction ID:</strong> {{ payment.transaction_id }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Refund Information</h5>
+                                {% if payment.refunds.exists %}
+                                {% for refund in payment.refunds.all %}
+                                <p><strong>Refund Status:</strong> {{ refund.status }}</p>
+                                <p><strong>Refund Amount:</strong> ${{ refund.amount }}</p>
+                                <p><strong>Refund Date:</strong> {{ refund.created_at|date:"F d, Y" }}</p>
+                                {% if refund.reason %}
+                                <p><strong>Reason:</strong> {{ refund.reason }}</p>
+                                {% endif %}
+                                {% endfor %}
+                                {% else %}
+                                <p>No refunds requested for this payment.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'payments:payment_list' %}" class="btn btn-outline-secondary me-2">Back to Payments</a>
+                        {% if payment.status == 'COMPLETED' and not payment.refunds.exists %}
+                        <a href="{% url 'payments:refund_create' payment.id %}" class="btn btn-outline-danger">Request Refund</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

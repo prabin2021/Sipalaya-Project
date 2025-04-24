@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Learning {{ course.title }} - LMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Course Content Sidebar -->
+        <div class="col-md-3 course-sidebar">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" style="width: {{ progress_percentage }}%" aria-valuenow="{{ progress_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ progress_percentage }}%</div>
+                    </div>
+                    
+                    <div class="course-modules">
+                        {% for module in course.modules.all %}
+                        <div class="module mb-3">
+                            <h6 class="module-title">{{ module.title }}</h6>
+                            <ul class="list-group">
+                                {% for lesson in module.lessons.all %}
+                                <li class="list-group-item {% if lesson in completed_lessons %}list-group-item-success{% endif %}">
+                                    <a href="{% url 'courses:lesson_detail' course.slug module.id lesson.id %}" class="text-decoration-none">
+                                        {{ lesson.title }}
+                                        {% if lesson in completed_lessons %}
+                                        <i class="fas fa-check text-success float-end"></i>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    {% if current_lesson %}
+                    <h2 class="card-title">{{ current_lesson.title }}</h2>
+                    
+                    {% if current_lesson.video_url %}
+                    <div class="video-container mb-4">
+                        <iframe src="{{ current_lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="lesson-content">
+                        {{ current_lesson.content|safe }}
+                    </div>
+                    
+                    <div class="lesson-navigation mt-4">
+                        {% if previous_lesson %}
+                        <a href="{% url 'courses:lesson_detail' course.slug previous_lesson.module.id previous_lesson.id %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Previous Lesson
+                        </a>
+                        {% endif %}
+                        
+                        {% if next_lesson %}
+                        <a href="{% url 'courses:lesson_detail' course.slug next_lesson.module.id next_lesson.id %}" class="btn btn-primary float-end">
+                            Next Lesson <i class="fas fa-arrow-right"></i>
+                        </a>
+                        {% else %}
+                        <button class="btn btn-success float-end" id="completeCourse">
+                            Complete Course
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <h2>Welcome to {{ course.title }}</h2>
+                        <p class="lead">Select a lesson from the sidebar to begin learning.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Discussion Forum -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h4>Discussion</h4>
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                        <div class="comment mb-3">
+                            <div class="d-flex">
+                                {% if comment.author.profile_picture %}
+                                <img src="{{ comment.author.profile_picture.url }}" alt="{{ comment.author.get_full_name }}" class="rounded-circle me-3" width="40">
+                                {% endif %}
+                                <div>
+                                    <h6>{{ comment.author.get_full_name }}</h6>
+                                    <p class="text-muted small">{{ comment.created_at|timesince }} ago</p>
+                                    <p>{{ comment.content }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p>No comments yet. Start the discussion!</p>
+                        {% endfor %}
+                    </div>
+                    
+                    <form method="post" action="{% url 'courses:add_comment' course.slug %}" class="mt-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea name="content" class="form-control" rows="3" placeholder="Add a comment..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .course-sidebar {
+        position: sticky;
+        top: 20px;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+    }
+    
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+    }
+    
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .lesson-navigation {
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('completeCourse').addEventListener('click', function() {
+        if (confirm('Are you sure you want to mark this course as complete?')) {
+            // Add AJAX call to mark course as complete
+            fetch('{% url "courses:complete_course" course.slug %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{% url "courses:course_detail" course.slug %}';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %} 

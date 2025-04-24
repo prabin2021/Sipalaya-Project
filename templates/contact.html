@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Contact Us - LMS{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1>Contact Us</h1>
+        <p>Get in touch with our team</p>
+    </div>
+</section>
+
+<!-- Contact Form Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Contact Information -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>Get In Touch</h3>
+                        <p>Have questions? We'd love to hear from you.</p>
+                        
+                        {% if site_settings %}
+                        <div class="mb-4">
+                            <h5><i class="fas fa-envelope me-2"></i>Email</h5>
+                            <p class="mb-0">{{ site_settings.email }}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5><i class="fas fa-phone me-2"></i>Phone</h5>
+                            <p class="mb-0">{{ site_settings.phone }}</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5><i class="fas fa-map-marker-alt me-2"></i>Address</h5>
+                            <p class="mb-0">{{ site_settings.address }}</p>
+                        </div>
+                        
+                        <div class="social-links">
+                            {% if site_settings.facebook_url %}
+                            <a href="{{ site_settings.facebook_url }}" class="text-primary me-3"><i class="fab fa-facebook-f"></i></a>
+                            {% endif %}
+                            {% if site_settings.twitter_url %}
+                            <a href="{{ site_settings.twitter_url }}" class="text-primary me-3"><i class="fab fa-twitter"></i></a>
+                            {% endif %}
+                            {% if site_settings.linkedin_url %}
+                            <a href="{{ site_settings.linkedin_url }}" class="text-primary me-3"><i class="fab fa-linkedin-in"></i></a>
+                            {% endif %}
+                            {% if site_settings.instagram_url %}
+                            <a href="{{ site_settings.instagram_url }}" class="text-primary"><i class="fab fa-instagram"></i></a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="mb-4">Send us a Message</h3>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body p-0">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d387193.305935303!2d-74.25986548248684!3d40.69714941932609!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2s!4v1645567990544!5m2!1sen!2s" 
+                                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

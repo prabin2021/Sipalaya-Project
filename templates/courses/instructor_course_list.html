@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Courses - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Courses</h1>
+        <a href="{% url 'courses:instructor_course_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Course
+        </a>
+    </div>
+    
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                    
+                    <div class="course-stats mb-3">
+                        <span class="badge bg-primary me-2">{{ course.enrollments.count }} Students</span>
+                        <span class="badge bg-success me-2">{{ course.modules.count }} Modules</span>
+                        <span class="badge bg-info">{{ course.lessons.count }} Lessons</span>
+                    </div>
+                    
+                    <div class="course-actions">
+                        <a href="{% url 'courses:instructor_course_update' course.id %}" class="btn btn-outline-primary btn-sm me-2">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'courses:instructor_course_delete' course.id %}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">
+                        Created: {{ course.created_at|date:"M d, Y" }}
+                        {% if course.is_published %}
+                        <span class="badge bg-success float-end">Published</span>
+                        {% else %}
+                        <span class="badge bg-warning float-end">Draft</span>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                You haven't created any courses yet. Click the "Create New Course" button to get started.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

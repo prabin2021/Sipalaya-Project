@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Complete Your Purchase</h2>
+                    
+                    <div class="course-summary mb-4">
+                        <h5>Course: {{ course.title }}</h5>
+                        <p class="text-muted">Instructor: {{ course.instructor.get_full_name }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Price:</span>
+                            <span class="h4 mb-0">${{ course.price }}</span>
+                        </div>
+                    </div>
+                    
+                    <form method="post" id="payment-form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Payment Method</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="credit_card" value="CREDIT_CARD" checked>
+                                <label class="form-check-label" for="credit_card">
+                                    <i class="fas fa-credit-card me-2"></i>Credit Card
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="debit_card" value="DEBIT_CARD">
+                                <label class="form-check-label" for="debit_card">
+                                    <i class="fas fa-credit-card me-2"></i>Debit Card
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="payment_method" id="paypal" value="PAYPAL">
+                                <label class="form-check-label" for="paypal">
+                                    <i class="fab fa-paypal me-2"></i>PayPal
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="payment_method" id="bank_transfer" value="BANK_TRANSFER">
+                                <label class="form-check-label" for="bank_transfer">
+                                    <i class="fas fa-university me-2"></i>Bank Transfer
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="coupon" class="form-label">Coupon Code (Optional)</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="coupon" name="coupon" placeholder="Enter coupon code">
+                                <button class="btn btn-outline-secondary" type="button" id="apply-coupon">Apply</button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Subtotal:</span>
+                                <span>${{ course.price }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>Discount:</span>
+                                <span id="discount">$0.00</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5">Total:</span>
+                                <span class="h5" id="total">${{ course.price }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-lock me-2"></i>Pay Now
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('apply-coupon').addEventListener('click', function() {
+        const couponCode = document.getElementById('coupon').value;
+        if (couponCode) {
+            // Add AJAX call to validate coupon
+            fetch('{% url "payments:validate_coupon" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({
+                    coupon_code: couponCode,
+                    course_price: {{ course.price }}
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('discount').textContent = '$' + data.discount.toFixed(2);
+                    document.getElementById('total').textContent = '$' + data.total.toFixed(2);
+                } else {
+                    alert('Invalid coupon code');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %} 

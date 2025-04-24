@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Refund History - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Refund History</h1>
+    
+    <div class="row">
+        {% for refund in refunds %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">{{ refund.payment.course.title }}</h5>
+                        <span class="badge {% if refund.status == 'COMPLETED' %}bg-success{% elif refund.status == 'PENDING' %}bg-warning{% elif refund.status == 'REJECTED' %}bg-danger{% else %}bg-secondary{% endif %}">
+                            {{ refund.status }}
+                        </span>
+                    </div>
+                    
+                    <div class="refund-details">
+                        <p class="mb-2">
+                            <strong>Amount:</strong> ${{ refund.amount }}
+                        </p>
+                        <p class="mb-2">
+                            <strong>Date:</strong> {{ refund.created_at|date:"F d, Y" }}
+                        </p>
+                        <p class="mb-0">
+                            <strong>Reason:</strong> {{ refund.reason|truncatewords:20 }}
+                        </p>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{% url 'payments:payment_detail' refund.payment.id %}" class="btn btn-outline-primary btn-sm">View Payment Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                You haven't requested any refunds yet.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}Edit Post{% else %}Create Post{% endif %} - LMS Blog{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">
+                        {% if form.instance.pk %}Edit Post{% else %}Create New Post{% endif %}
+                    </h2>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                {{ form.title|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.category|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        {{ form.content|as_crispy_field }}
+                        {{ form.excerpt|as_crispy_field }}
+                        {{ form.featured_image|as_crispy_field }}
+                        {{ form.tags|as_crispy_field }}
+                        
+                        <div class="form-check mb-3">
+                            <input type="checkbox" name="is_published" id="is_published" class="form-check-input" {% if form.instance.is_published %}checked{% endif %}>
+                            <label for="is_published" class="form-check-label">Publish this post</label>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                {% if form.instance.pk %}Update Post{% else %}Create Post{% endif %}
+                            </button>
+                            <a href="{% url 'blog:post_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            placeholder: 'Select tags',
+            tags: true,
+            tokenSeparators: [',', ' ']
+        });
+    });
+</script>
+{% endblock %} 

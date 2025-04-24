@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="rounded-circle mb-3" width="150">
+                    {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" alt="{{ user.get_full_name }}" class="rounded-circle mb-3" width="150">
+                    {% endif %}
+                    
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                    
+                    <div class="list-group mt-4">
+                        <a href="{% url 'users:profile' %}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-user me-2"></i>Profile
+                        </a>
+                        {% if user.user_type == 'STUDENT' %}
+                        <a href="{% url 'core:student_dashboard' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-graduation-cap me-2"></i>My Courses
+                        </a>
+                        <a href="{% url 'payments:payment_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-credit-card me-2"></i>Payment History
+                        </a>
+                        {% elif user.user_type == 'INSTRUCTOR' %}
+                        <a href="{% url 'core:instructor_dashboard' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-chalkboard-teacher me-2"></i>My Courses
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'users:change_password' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-lock me-2"></i>Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Profile Information</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Full Name:</strong> {{ user.get_full_name }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Phone:</strong> {{ user.phone_number|default:"Not provided" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Date of Birth:</strong> {{ user.date_of_birth|date:"F d, Y"|default:"Not provided" }}</p>
+                            <p><strong>Address:</strong> {{ user.address|default:"Not provided" }}</p>
+                            <p><strong>Account Type:</strong> {{ user.get_user_type_display }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4>Bio</h4>
+                        <p>{{ user.bio|default:"No bio provided." }}</p>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'users:profile_update' %}" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            {% if user.user_type == 'STUDENT' %}
+            <!-- Course Progress -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Course Progress</h3>
+                    
+                    {% for enrollment in user.enrollments.all %}
+                    <div class="course-progress mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">{{ enrollment.course.title }}</h5>
+                            <span class="badge bg-primary">{{ enrollment.progress.count }}% Complete</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: {{ enrollment.progress.count }}%" aria-valuenow="{{ enrollment.progress.count }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>You haven't enrolled in any courses yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Instructor Dashboard - LMS{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="{{ user.get_full_name }}" class="rounded-circle mb-3" width="100">
+                    {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" alt="{{ user.get_full_name }}" class="rounded-circle mb-3" width="100">
+                    {% endif %}
+                    
+                    <h5>{{ user.get_full_name }}</h5>
+                    <p class="text-muted">Instructor</p>
+                    
+                    <div class="list-group mt-4">
+                        <a href="{% url 'core:instructor_dashboard' %}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a href="{% url 'core:profile' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-user me-2"></i>Profile
+                        </a>
+                        <a href="{% url 'courses:instructor_course_list' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-book me-2"></i>My Courses
+                        </a>
+                        <a href="{% url 'courses:instructor_course_create' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus me-2"></i>Create Course
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <!-- Welcome Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">Welcome back, {{ user.first_name }}!</h2>
+                    <p class="text-muted">Manage your courses and track student progress.</p>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Courses</h5>
+                            <h2 class="mb-0">{{ courses.count }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Students</h5>
+                            <h2 class="mb-0">{{ total_students }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Revenue</h5>
+                            <h2 class="mb-0">${{ total_revenue|default:"0" }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Courses -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="card-title mb-0">Recent Courses</h3>
+                        <a href="{% url 'courses:instructor_course_create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create New Course
+                        </a>
+                    </div>
+                    
+                    {% for course in courses %}
+                    <div class="course-item mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="img-fluid rounded">
+                            </div>
+                            <div class="col-md-9">
+                                <h5>{{ course.title }}</h5>
+                                <p class="text-muted">
+                                    <span class="me-3"><i class="fas fa-users me-1"></i> {{ course.enrollments.count }} Students</span>
+                                    <span class="me-3"><i class="fas fa-star me-1"></i> {{ course.reviews.count }} Reviews</span>
+                                    <span><i class="fas fa-dollar-sign me-1"></i> ${{ course.price }}</span>
+                                </p>
+                                <div class="d-flex">
+                                    <a href="{% url 'courses:instructor_course_update' course.id %}" class="btn btn-outline-primary btn-sm me-2">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <a href="{% url 'courses:course_detail' course.slug %}" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-eye me-1"></i>View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>You haven't created any courses yet.</p>
+                    <a href="{% url 'courses:instructor_course_create' %}" class="btn btn-primary">Create Your First Course</a>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Recent Reviews -->
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title mb-4">Recent Reviews</h3>
+                    {% for course in courses %}
+                        {% for review in course.reviews.all|slice:":3" %}
+                        <div class="review-item mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ review.enrollment.student.get_full_name }}</h6>
+                                    <div class="rating mb-2">
+                                        {% for i in "12345" %}
+                                        <i class="fas fa-star {% if forloop.counter <= review.rating %}text-warning{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <p class="mb-1">{{ review.comment|truncatewords:30 }}</p>
+                                    <small class="text-muted">{{ review.created_at|date:"F d, Y" }}</small>
+                                </div>
+                                <span class="badge bg-primary">{{ review.enrollment.course.title }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% empty %}
+                    <p>No reviews yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

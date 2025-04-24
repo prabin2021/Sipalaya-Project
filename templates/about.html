@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - LMS{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1>About Us</h1>
+        <p>Learn more about our mission and values</p>
+    </div>
+</section>
+
+<!-- About Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Our Story</h2>
+                <p class="lead">We are dedicated to making quality education accessible to everyone.</p>
+                <p>Our learning management system provides a platform for instructors to share their knowledge and for students to learn at their own pace. We believe in the power of education to transform lives and create opportunities.</p>
+            </div>
+            <div class="col-md-4">
+                <img src="{% static 'images/about.jpg' %}" alt="About Us" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Us</h2>
+        <div class="row">
+            {% for feature in features %}
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <i class="{{ feature.icon }}"></i>
+                    <h3>{{ feature.title }}</h3>
+                    <p>{{ feature.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonial-section">
+    <div class="container">
+        <h2 class="text-center mb-5">What Our Students Say</h2>
+        <div class="row">
+            {% for testimonial in testimonials %}
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    {% if testimonial.image %}
+                    <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" class="rounded-circle">
+                    {% endif %}
+                    <div class="rating">
+                        {% for i in "12345" %}
+                        <i class="fas fa-star {% if forloop.counter <= testimonial.rating %}text-warning{% endif %}"></i>
+                        {% endfor %}
+                    </div>
+                    <p class="testimonial-content">{{ testimonial.content }}</p>
+                    <div class="testimonial-author">
+                        <h5>{{ testimonial.name }}</h5>
+                        <p class="text-muted">{{ testimonial.role }}{% if testimonial.company %} at {{ testimonial.company }}{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %} 

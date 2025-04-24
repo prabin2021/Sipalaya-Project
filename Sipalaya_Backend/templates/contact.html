@@ -1,0 +1,174 @@
+
+{% extends 'protected_page.html' %}
+{% block title %}Contact  Us{% endblock %}
+
+{% block content %}
+<style>
+    /* General styling for the Contact Us section */
+.contact-us {
+    background-color: #f9f9f9; /* Light background color */
+    padding: 50px 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Header styling */
+.contact-header h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+/* Styling for the contact form */
+.contact-form {
+    background-color: #fff; /* White background for the form */
+    max-width: 800px;
+    margin: 0 auto; /* Center the form */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Heading of the form */
+.contact-form h3 {
+    font-size: 2rem;
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+/* Styling for form elements (inputs and text area) */
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Gap between form fields */
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px 18px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #fafafa; /* Light background */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    border-color: #6c5ce7; /* Purple border when focused */
+    outline: none;
+    background-color: #fff; /* White background on focus */
+}
+
+/* Style for the message textarea */
+.contact-form textarea {
+    height: 150px; /* Give it more height */
+    resize: vertical; /* Allow vertical resizing */
+}
+
+/* Submit button styling */
+.submit-btn {
+    background-color: #6c5ce7; /* Purple background */
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: center; /* Center the button */
+}
+
+.submit-btn:hover {
+    background-color: #5a4cd1; /* Darker purple on hover */
+}
+
+/* Small responsive design for smaller screens */
+@media (max-width: 768px) {
+    .contact-header h1 {
+        font-size: 2rem;
+    }
+
+    .contact-form {
+        padding: 20px;
+    }
+
+    .contact-form h3 {
+        font-size: 1.6rem;
+    }
+
+    .submit-btn {
+        font-size: 1rem;
+        padding: 10px 25px;
+    }
+}
+
+.back-to-home{
+text-align: center;
+align-items: center;
+}
+
+.go-home-btn {
+    background-color: #6c5ce7;
+    color: white;
+    padding: 15px 30px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.go-home-btn:hover {
+    background-color: #5a4cd1; /* Darker purple on hover */
+}
+
+/* Animation for fading in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+<section class="contact-us">
+    <div class="contact-header">
+        <h1>We'd Love to Hear From You!</h1>
+    </div>
+
+    <!-- Form Section -->
+    <div class="contact-form">
+        <h3>Get In Touch</h3>
+
+        <!-- Displaying any message after form submission -->
+        {% if message %}
+        <div class="form-message">
+            <p>{{ message }}</p>
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Render form fields -->
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+</div>
+</section>
+<div class="back-to-home">
+    <!-- Go to Home Button -->
+    <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}" class="go-home-btn">Back to Home</a>
+</div>
+        
+{% endblock %}

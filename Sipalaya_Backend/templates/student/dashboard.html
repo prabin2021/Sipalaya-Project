@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<div class="dashboard-container">
+    <h2>Student Dashboard</h2>
+    <div class="dashboard-stats">
+        <div class="stat-card">
+            <i class="fas fa-book"></i>
+            <h3>Enrolled Courses</h3>
+            <p>{{ enrolled_courses.count }}</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-check-circle"></i>
+            <h3>Completed Lessons</h3>
+            <p>{{ completed_lessons_count }}</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-tasks"></i>
+            <h3>Pending Assignments</h3>
+            <p>{{ pending_assignments_count }}</p>
+        </div>
+    </div>
+    <div class="dashboard-actions">
+        <a href="{% url 'course_list' %}" class="action-button">Browse Courses</a>
+        <a href="{% url 'view_assignments' %}" class="action-button">View Assignments</a>
+        <a href="{% url 'view_attendance' %}" class="action-button">View Attendance</a>
+    </div>
+
+    <!-- Enrolled Courses Section -->
+    <div class="enrolled-courses">
+        <h3>Your Enrolled Courses</h3>
+        <div class="course-grid">
+            {% for course in enrolled_courses %}
+            <div class="course-card">
+                <h4>{{ course.course.title }}</h4>
+                <div class="progress-bar">
+                    <div class="progress" data-progress="{{ course.progress }}"></div>
+                </div>
+                <p>Progress: {{ course.progress }}%</p>
+                <a href="{% url 'course_detail' course.course.id %}" class="btn btn-primary">Continue Learning</a>
+            </div>
+            {% empty %}
+            <p>You haven't enrolled in any courses yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBars = document.querySelectorAll('.progress');
+    progressBars.forEach(bar => {
+        const progress = bar.getAttribute('data-progress');
+        bar.style.width = progress + '%';
+    });
+});
+</script>
+{% endblock %} 

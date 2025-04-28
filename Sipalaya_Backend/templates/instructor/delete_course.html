@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="delete-course-container">
+    <div class="delete-course-content">
+        <div class="delete-course-header">
+            <i class="fas fa-exclamation-triangle text-warning"></i>
+            <h1>Delete Course</h1>
+        </div>
+        
+        <div class="delete-course-body">
+            <p>Are you sure you want to delete the course "{{ course.title }}"?</p>
+            <p class="text-danger">This action cannot be undone.</p>
+            
+            <div class="course-details">
+                <h3>Course Details</h3>
+                <div class="detail-item">
+                    <span class="label">Title:</span>
+                    <span class="value">{{ course.title }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Duration:</span>
+                    <span class="value">{{ course.duration }} hours</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Level:</span>
+                    <span class="value">{{ course.level|title }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Price:</span>
+                    <span class="value">${{ course.price }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="delete-course-actions">
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete Course
+                </button>
+                <a href="{% url 'manage_courses' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.delete-course-container {
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.delete-course-content {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.delete-course-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.delete-course-header i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.delete-course-header h1 {
+    margin: 0;
+    color: #333;
+}
+
+.delete-course-body {
+    margin-bottom: 2rem;
+}
+
+.delete-course-body p {
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
+.course-details {
+    background: #f8f9fa;
+    border-radius: 5px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.course-details h3 {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.detail-item {
+    display: flex;
+    margin-bottom: 0.5rem;
+}
+
+.detail-item .label {
+    font-weight: bold;
+    width: 100px;
+    color: #666;
+}
+
+.detail-item .value {
+    color: #333;
+}
+
+.delete-course-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.delete-course-actions .btn {
+    min-width: 150px;
+}
+
+@media (max-width: 768px) {
+    .delete-course-actions {
+        flex-direction: column;
+    }
+    
+    .delete-course-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %} 

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import homepage_view, search_view
 from django.contrib.auth import views as auth_views
 from . import views  
-from stud_portal.views import student_dashboard
+
 urlpatterns = [
     path('', homepage_view, name='homepage'),
     path('', search_view, name='search_courses'),
@@ -12,6 +12,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('signup/', views.signup, name='signup'),
     path('protected/', views.protected_page, name='protected_page'),
-    path('stud_portal/', student_dashboard, name='stud_dashboard'),
 ]
 

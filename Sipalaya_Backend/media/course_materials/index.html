@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LearnSphere - LMS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    header {
+      background: #1e3a8a;
+      color: white;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 28px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #facc15;
+    }
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 20px;
+      background: linear-gradient(135deg, #3b82f6, #9333ea);
+      color: white;
+    }
+
+    .hero h2 {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      max-width: 700px;
+      margin-bottom: 30px;
+    }
+
+    .hero button {
+      padding: 12px 30px;
+      background: #facc15;
+      color: #1f2937;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .hero button:hover {
+      background: #eab308;
+    }
+
+    .features {
+      padding: 60px 40px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 30px;
+      background: #ffffff;
+    }
+
+    .feature {
+      background: #f1f5f9;
+      padding: 30px;
+      border-radius: 10px;
+      width: 280px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .feature h3 {
+      margin-bottom: 15px;
+      color: #1e40af;
+    }
+
+    .feature p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    footer {
+      background: #1e3a8a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .features {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero h2 {
+        font-size: 30px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>LearnSphere</h1>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Courses</a>
+      <a href="#">Login</a>
+      <a href="#">Sign Up</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Empower Your Learning Journey</h2>
+    <p>LearnSphere is your one-stop solution for online learning, course tracking, and skill development with expert-led instruction.</p>
+    <button onclick="alert('Redirecting to signup...')">Get Started</button>
+  </section>
+
+  <section class="features">
+    <div class="feature">
+      <h3>Interactive Courses</h3>
+      <p>Engage with high-quality video lectures, assignments, and hands-on projects.</p>
+    </div>
+    <div class="feature">
+      <h3>Track Progress</h3>
+      <p>Monitor your learning path with real-time progress and performance metrics.</p>
+    </div>
+    <div class="feature">
+      <h3>Certified Learning</h3>
+      <p>Earn recognized certificates to boost your resume and job opportunities.</p>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 LearnSphere. All rights reserved.
+  </footer>
+
+</body>
+</html>

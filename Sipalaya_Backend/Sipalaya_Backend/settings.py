@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "courses",
     "homepage",
     "stud_portal",
-
+    "instructor_portal",
 
 ]
 

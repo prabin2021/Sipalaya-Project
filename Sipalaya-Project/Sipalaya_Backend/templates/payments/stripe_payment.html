@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Complete Your Payment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="payment-summary mb-4">
+                        <h5>Payment Summary</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Course:</strong> {{ payment.course.title }}</p>
+                                <p><strong>Amount:</strong> ${{ payment.amount }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Payment Method:</strong> {{ payment.payment_method.get_name_display }}</p>
+                                {% if payment.is_installment %}
+                                <p><strong>Installment:</strong> {{ payment.installment_number }} of {{ payment.total_installments }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="payment-form" class="mb-4">
+                        <div class="form-group">
+                            <label for="card-element">Credit or Debit Card</label>
+                            <div id="card-element" class="form-control">
+                                <!-- Stripe Card Element will be inserted here -->
+                            </div>
+                            <div id="card-errors" class="invalid-feedback" role="alert"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cardholder-name">Cardholder Name</label>
+                            <input type="text" id="cardholder-name" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cardholder-email">Email</label>
+                            <input type="email" id="cardholder-email" class="form-control" value="{{ request.user.email }}" required>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submit-button">
+                                <span id="button-text">Pay ${{ payment.amount }}</span>
+                                <span id="spinner" class="spinner d-none"></span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="payment-security-info">
+                        <div class="security-badges text-center mb-3">
+                            <img src="{% static 'images/payment/secure-payment.png' %}" alt="Secure Payment" class="security-badge">
+                            <img src="{% static 'images/payment/ssl-badge.png' %}" alt="SSL Secure" class="security-badge">
+                        </div>
+                        <p class="text-muted text-center mb-0">
+                            Your payment information is encrypted and secure. We never store your card details.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ stripe_public_key }}');
+const elements = stripe.elements();
+const card = elements.create('card', {
+    style: {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            '::placeholder': {
+                color: '#aab7c4'
+            }
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+        }
+    }
+});
+
+card.mount('#card-element');
+
+const form = document.getElementById('payment-form');
+const submitButton = document.getElementById('submit-button');
+const spinner = document.getElementById('spinner');
+const buttonText = document.getElementById('button-text');
+
+card.addEventListener('change', function(event) {
+    const displayError = document.getElementById('card-errors');
+    if (event.error) {
+        displayError.textContent = event.error.message;
+        displayError.style.display = 'block';
+    } else {
+        displayError.textContent = '';
+        displayError.style.display = 'none';
+    }
+});
+
+form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    submitButton.disabled = true;
+    spinner.classList.remove('d-none');
+    buttonText.textContent = 'Processing...';
+
+    try {
+        const { paymentIntent, error } = await stripe.confirmCardPayment('{{ client_secret }}', {
+            payment_method: {
+                card: card,
+                billing_details: {
+                    name: document.getElementById('cardholder-name').value,
+                    email: document.getElementById('cardholder-email').value
+                }
+            }
+        });
+
+        if (error) {
+            const errorElement = document.getElementById('card-errors');
+            errorElement.textContent = error.message;
+            errorElement.style.display = 'block';
+            submitButton.disabled = false;
+            spinner.classList.add('d-none');
+            buttonText.textContent = 'Pay ${{ payment.amount }}';
+        } else {
+            if (paymentIntent.status === 'succeeded') {
+                window.location.href = "{% url 'payments:payment_success' payment.id %}";
+            }
+        }
+    } catch (err) {
+        console.error('Error:', err);
+        const errorElement = document.getElementById('card-errors');
+        errorElement.textContent = 'An unexpected error occurred.';
+        errorElement.style.display = 'block';
+        submitButton.disabled = false;
+        spinner.classList.add('d-none');
+        buttonText.textContent = 'Pay ${{ payment.amount }}';
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+#card-element {
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background: white;
+}
+
+.security-badge {
+    height: 40px;
+    margin: 0 10px;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.payment-summary {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#card-errors {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Payment for {{ course.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="course-summary mb-4">
+                        <h5>Course Summary</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Course:</strong> {{ course.title }}</p>
+                                <p><strong>Duration:</strong> {{ course.duration }} weeks</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Price:</strong> ${{ course.price }}</p>
+                                <p><strong>Instructor:</strong> {{ course.instructor.get_full_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form method="post" id="payment-form">
+                        {% csrf_token %}
+                        
+                        <div class="payment-methods mb-4">
+                            <h5>Select Payment Method</h5>
+                            <div class="row">
+                                {% for method in payment_methods %}
+                                <div class="col-md-4">
+                                    <div class="payment-method-card">
+                                        <input type="radio" name="payment_method" id="method_{{ method.name }}" value="{{ method.name }}" required>
+                                        <label for="method_{{ method.name }}" class="payment-method-label">
+                                            <img src="{% static 'images/payment/'|add:method.name|add:'.png' %}" alt="{{ method.get_name_display }}" class="payment-method-icon">
+                                            <span>{{ method.get_name_display }}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="installment-option mb-4">
+                            <h5>Payment Options</h5>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="is_installment" name="is_installment">
+                                <label class="form-check-label" for="is_installment">Pay in Installments</label>
+                            </div>
+                            
+                            <div id="installment-details" class="d-none">
+                                <div class="form-group">
+                                    <label for="number_of_installments">Number of Installments</label>
+                                    <select class="form-control" id="number_of_installments" name="number_of_installments">
+                                        <option value="2">2 installments</option>
+                                        <option value="3" selected>3 installments</option>
+                                        <option value="4">4 installments</option>
+                                    </select>
+                                </div>
+                                <div class="installment-summary mt-3">
+                                    <p><strong>Amount per installment:</strong> <span id="installment-amount">${{ course.price|divisibleby:3 }}</span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="total-amount mb-4">
+                            <h5>Total Amount</h5>
+                            <div class="amount-display">
+                                <span class="amount-label">Total:</span>
+                                <span class="amount-value">${{ course.price }}</span>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">Proceed to Payment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const isInstallmentCheckbox = document.getElementById('is_installment');
+    const installmentDetails = document.getElementById('installment-details');
+    const numberOfInstallments = document.getElementById('number_of_installments');
+    const installmentAmount = document.getElementById('installment-amount');
+    const coursePrice = {{ course.price }};
+
+    isInstallmentCheckbox.addEventListener('change', function() {
+        installmentDetails.classList.toggle('d-none', !this.checked);
+        updateInstallmentAmount();
+    });
+
+    numberOfInstallments.addEventListener('change', updateInstallmentAmount);
+
+    function updateInstallmentAmount() {
+        if (isInstallmentCheckbox.checked) {
+            const installments = parseInt(numberOfInstallments.value);
+            const amount = (coursePrice / installments).toFixed(2);
+            installmentAmount.textContent = '$' + amount;
+        }
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.payment-method-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.payment-method-label {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    cursor: pointer;
+}
+
+.payment-method-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    object-fit: contain;
+}
+
+.amount-display {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.amount-label {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+.amount-value {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.installment-summary {
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 8px;
+}
+</style>
+{% endblock %}
+{% endblock %} 

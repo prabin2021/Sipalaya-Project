@@ -1,0 +1,62 @@
+{% extends 'demo_classes/base.html' %}
+
+{% block page_title %}Add Time Slot for {{ demo_class.title }}{% endblock %}
+
+{% block demo_content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Add New Time Slot</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_start_time">Start Time</label>
+                        <input type="datetime-local" name="start_time" id="id_start_time" class="form-control" required>
+                        <small class="form-text text-muted">Please select a future date and time</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_end_time">End Time</label>
+                        <input type="datetime-local" name="end_time" id="id_end_time" class="form-control" required>
+                        <small class="form-text text-muted">Duration should not exceed 2 hours</small>
+                    </div>
+                    
+                    <div class="text-right">
+                        <a href="{% url 'demo_classes:detail' demo_class.id %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Add Time Slot</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startTimeInput = document.getElementById('id_start_time');
+        const endTimeInput = document.getElementById('id_end_time');
+        
+        // Set minimum datetime to current time
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        
+        const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        startTimeInput.min = minDateTime;
+        
+        // Update end time minimum when start time changes
+        startTimeInput.addEventListener('change', function() {
+            endTimeInput.min = this.value;
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

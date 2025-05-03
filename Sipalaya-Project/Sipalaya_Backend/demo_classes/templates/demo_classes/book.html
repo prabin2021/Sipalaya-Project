@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Demo Class - {{ schedule.demo_class.title }}{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <!-- Back Link -->
+        <div class="mb-8">
+            <a href="{% url 'demo_classes:detail' schedule.demo_class.id %}" 
+               class="inline-flex items-center text-sm font-medium text-primary hover:text-blue-700">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Demo Class Details
+            </a>
+        </div>
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-extrabold text-gray-900">
+                Book Demo Class
+            </h1>
+            <p class="mt-4 text-lg text-gray-500">
+                Complete your booking for {{ schedule.demo_class.title }}
+            </p>
+        </div>
+
+        <!-- Booking Details -->
+        <div class="bg-white shadow rounded-lg overflow-hidden mb-8">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Class Details</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Demo Class</h3>
+                        <p class="mt-1 text-lg text-gray-900">{{ schedule.demo_class.title }}</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Course</h3>
+                        <p class="mt-1 text-lg text-gray-900">{{ schedule.demo_class.course.title }}</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Instructor</h3>
+                        <p class="mt-1 text-lg text-gray-900">
+                            {% if schedule.demo_class.instructor.get_full_name %}
+                                {{ schedule.demo_class.instructor.get_full_name }}
+                            {% else %}
+                                {% with instructor_profile=schedule.demo_class.instructor.instructorprofile %}
+                                    {% if instructor_profile.full_name %}
+                                        {{ instructor_profile.full_name }}
+                                    {% else %}
+                                        {{ schedule.demo_class.instructor.username }}
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500">Date & Time</h3>
+                        <p class="mt-1 text-lg text-gray-900">
+                            {{ schedule.start_time|date:"l, F j, Y" }}<br>
+                            <span class="text-sm text-gray-500">
+                                {{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-6">Complete Your Booking</h2>
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="rounded-md bg-red-50 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-red-800">
+                                        There were errors with your submission
+                                    </h3>
+                                    <div class="mt-2 text-sm text-red-700">
+                                        {{ form.non_field_errors }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div>
+                        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Additional Notes
+                        </label>
+                        <div class="mt-1">
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <p class="mt-2 text-sm text-red-600">
+                                    {{ form.notes.errors }}
+                                </p>
+                            {% endif %}
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Add any specific requirements or questions you have for the instructor.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <a href="{% url 'demo_classes:detail' schedule.demo_class.id %}" 
+                           class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700">
+                            Confirm Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Important Notes -->
+        <div class="mt-8 bg-blue-50 rounded-lg p-6">
+            <h3 class="text-lg font-medium text-blue-900 mb-4">Important Notes:</h3>
+            <ul class="space-y-3 text-sm text-blue-700">
+                <li class="flex items-start">
+                    <i class="fas fa-info-circle mt-1 mr-3"></i>
+                    <span>You will receive a confirmation email with the class details and Zoom link.</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-clock mt-1 mr-3"></i>
+                    <span>Please join the class 5 minutes before the scheduled time.</span>
+                </li>
+                <li class="flex items-start">
+                    <i class="fas fa-calendar-alt mt-1 mr-3"></i>
+                    <span>You can cancel your booking up to 24 hours before the class starts.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} 

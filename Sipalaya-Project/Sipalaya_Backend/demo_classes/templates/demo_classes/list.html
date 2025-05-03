@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Demo Classes - Sipalaya Infotech{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Available Demo Classes
+            </h1>
+            <p class="mt-4 text-lg text-gray-500">
+                Book a free demo class to experience our teaching methodology
+            </p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="mt-8 max-w-xl mx-auto">
+            <form method="GET" action="{% url 'demo_classes:list' %}" class="flex gap-4">
+                <div class="flex-1">
+                    <input type="text" name="search" value="{{ search_query }}" 
+                           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
+                           placeholder="Search by class title, description, or course...">
+                </div>
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700">
+                    Search
+                </button>
+            </form>
+        </div>
+
+        <!-- My Bookings Link -->
+        {% if user.is_authenticated %}
+        <div class="mt-6 text-center">
+            <a href="{% url 'demo_classes:my_bookings' %}" 
+               class="inline-flex items-center text-sm font-medium text-primary hover:text-blue-700">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                View My Bookings
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Demo Classes Grid -->
+        <div class="mt-12">
+            {% if demo_classes %}
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for demo_class in demo_classes %}
+                        <div class="bg-white shadow rounded-lg overflow-hidden border border-gray-200">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-lg font-medium text-gray-900">
+                                        {{ demo_class.title }}
+                                    </h3>
+                                    {% if demo_class.is_active %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            Active
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="space-y-3">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-book mr-2"></i>
+                                        Course: {{ demo_class.course.title }}
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-user mr-2"></i>
+                                        Instructor: 
+                                        {% if demo_class.instructor.get_full_name %}
+                                            {{ demo_class.instructor.get_full_name }}
+                                        {% else %}
+                                            {% with instructor_profile=demo_class.instructor.instructorprofile %}
+                                                {% if instructor_profile.full_name %}
+                                                    {{ instructor_profile.full_name }}
+                                                {% else %}
+                                                    {{ demo_class.instructor.username }}
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-users mr-2"></i>
+                                        Max Participants: {{ demo_class.max_participants }}
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <p class="text-sm text-gray-600 line-clamp-3">
+                                        {{ demo_class.description }}
+                                    </p>
+                                </div>
+
+                                <!-- Available Schedules -->
+                                <div class="mt-4">
+                                    <h4 class="text-sm font-medium text-gray-900">Available Time Slots:</h4>
+                                    <div class="mt-2 space-y-2">
+                                        {% for schedule in demo_class.schedules.all %}
+                                            {% if not schedule.is_booked and schedule.start_time > now %}
+                                                <div class="text-sm text-gray-600">
+                                                    {{ schedule.start_time|date:"F j, Y" }} at {{ schedule.start_time|time:"g:i A" }}
+                                                </div>
+                                            {% endif %}
+                                        {% empty %}
+                                            <p class="text-sm text-gray-500">No available time slots</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <div class="mt-6">
+                                    <a href="{% url 'demo_classes:detail' demo_class.id %}" 
+                                       class="block w-full text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700">
+                                        View Details & Book
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if demo_classes.has_other_pages %}
+                    <div class="mt-8 flex justify-center">
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                            {% if demo_classes.has_previous %}
+                                <a href="?page={{ demo_classes.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    Previous
+                                </a>
+                            {% endif %}
+
+                            {% for i in demo_classes.paginator.page_range %}
+                                {% if demo_classes.number == i %}
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white">
+                                        {{ i }}
+                                    </span>
+                                {% else %}
+                                    <a href="?page={{ i }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                                        {{ i }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if demo_classes.has_next %}
+                                <a href="?page={{ demo_classes.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" 
+                                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    Next
+                                </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-12">
+                    <i class="fas fa-calendar-times text-6xl text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900">No Demo Classes Found</h3>
+                    <p class="mt-2 text-sm text-gray-500">
+                        {% if search_query %}
+                            No demo classes match your search criteria.
+                        {% else %}
+                            There are no demo classes available at the moment.
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

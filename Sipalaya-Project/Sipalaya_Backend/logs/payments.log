@@ -1,0 +1,12 @@
+ERROR 2025-05-03 10:02:51,010 views 6453 8260368448 Unexpected error in eSewa payment callback: name 'callback_result' is not defined
+Traceback (most recent call last):
+  File "/Users/bigyat/Desktop/client/Sipalaya-Project/Sipalaya_Backend/payments/views.py", line 183, in esewa_success
+    if callback_result['success']:
+       ^^^^^^^^^^^^^^^
+NameError: name 'callback_result' is not defined
+ERROR 2025-05-03 10:04:32,783 views 6623 8260368448 Unexpected error in eSewa payment callback: name 'callback_result' is not defined
+Traceback (most recent call last):
+  File "/Users/bigyat/Desktop/client/Sipalaya-Project/Sipalaya_Backend/payments/views.py", line 183, in esewa_success
+    if callback_result['success']:
+       ^^^^^^^^^^^^^^^
+NameError: name 'callback_result' is not defined

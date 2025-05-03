@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }} - Sipalaya Info Tech{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <!-- Course Header -->
+    <div class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-12">
+            <div class="flex flex-col lg:flex-row gap-12">
+                <!-- Course Image -->
+                <div class="w-full lg:w-1/3">
+                    {% if course.image %}
+                    <div class="relative rounded-2xl overflow-hidden shadow-xl">
+                        <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full aspect-[4/3] object-cover">
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-full">
+                                {{ course.skill_level|title }}
+                            </span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="w-full aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl flex items-center justify-center shadow-xl">
+                        <span class="text-gray-400 text-lg">No Image</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Course Info -->
+                <div class="w-full lg:w-2/3">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
+                        <h1 class="text-4xl font-bold text-gray-800 mb-4 lg:mb-0">{{ course.title }}</h1>
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <span class="text-gray-800 font-semibold">{{ course.rating|default:"0" }}/5</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-blue-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                <span class="text-gray-800 font-semibold">{{ course.enrollment_count }} students</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="text-gray-600 text-lg leading-relaxed mb-8">{{ course.description }}</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
+                            <div class="text-sm text-gray-600 mb-1">Duration</div>
+                            <div class="text-2xl font-bold text-blue-600">{{ course.duration }} months</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-teal-50 p-6 rounded-xl">
+                            <div class="text-sm text-gray-600 mb-1">Price</div>
+                            <div class="text-2xl font-bold text-green-600">Rs. {{ course.price }}</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl">
+                            <div class="text-sm text-gray-600 mb-1">Students</div>
+                            <div class="text-2xl font-bold text-purple-600">{{ course.enrollment_count }}</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-6 rounded-xl">
+                            <div class="text-sm text-gray-600 mb-1">Rating</div>
+                            <div class="text-2xl font-bold text-yellow-600">{{ course.rating|default:"0" }}/5</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{% url 'courses:demo_class_schedule' course.id %}" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 transform hover:scale-105 text-center font-semibold">
+                            Book a Demo Class
+                        </a>
+                        <a href="{% url 'courses:payment_page' course.id %}" class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-8 py-4 rounded-xl hover:from-green-700 hover:to-teal-700 transition-all duration-300 transform hover:scale-105 text-center font-semibold">
+                            Enroll Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content -->
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Course Overview -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Course Overview</h2>
+                    <div class="prose max-w-none text-gray-600">
+                        {{ course.overview|safe }}
+                    </div>
+                </div>
+
+                <!-- Course Curriculum -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Course Curriculum</h2>
+                    <div class="space-y-6">
+                        {% for module in course.modules.all %}
+                        <div class="border border-gray-200 rounded-xl overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+                                <h3 class="text-xl font-semibold text-gray-800">{{ module.title }}</h3>
+                            </div>
+                            <div class="p-6">
+                                <ul class="space-y-4">
+                                    {% for lesson in module.lessons.all %}
+                                    <li class="flex items-center">
+                                        <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="text-gray-700">{{ lesson.title }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Instructor Info -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 transform transition-all duration-300 hover:shadow-2xl">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Instructor</h2>
+                    <div class="flex items-center mb-6">
+                        {% if course.instructor.profile_picture %}
+                        <img src="{{ course.instructor.profile_picture.url }}" alt="{{ course.instructor.get_full_name }}" class="w-20 h-20 rounded-full mr-4 object-cover">
+                        {% else %}
+                        <div class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mr-4 flex items-center justify-center">
+                            <span class="text-gray-400 text-2xl font-bold">{{ course.instructor.get_full_name|first }}</span>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-800">{{ course.instructor.get_full_name }}</h3>
+                            <p class="text-gray-600">{{ course.instructor.title }}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 leading-relaxed">{{ course.instructor.bio }}</p>
+                </div>
+
+                <!-- Course Features -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Course Features</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">Lifetime Access</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">Certificate of Completion</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">24/7 Support</span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-6 h-6 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-gray-700">Practical Projects</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

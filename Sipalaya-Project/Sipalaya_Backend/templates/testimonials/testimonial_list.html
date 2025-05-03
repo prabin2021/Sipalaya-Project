@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Student Success Stories</h2>
+    
+    <div class="row">
+        {% for testimonial in testimonials %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if testimonial.photo %}
+                <img src="{{ testimonial.photo.url }}" class="card-img-top" alt="{{ testimonial.student.get_full_name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ testimonial.student.get_full_name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ testimonial.course.title }}</h6>
+                    <p class="card-text">{{ testimonial.content }}</p>
+                    <div class="rating">
+                        {% for i in "12345" %}
+                        <span class="star {% if forloop.counter <= testimonial.rating %}filled{% endif %}">★</span>
+                        {% endfor %}
+                    </div>
+                    {% if testimonial.job_title and testimonial.company %}
+                    <p class="mt-2">
+                        <small class="text-muted">
+                            {{ testimonial.job_title }} at {{ testimonial.company }}
+                        </small>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">No testimonials available yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.rating {
+    color: #ddd;
+    font-size: 20px;
+}
+
+.rating .star.filled {
+    color: #ffd700;
+}
+
+.card {
+    transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+</style>
+{% endblock %} 

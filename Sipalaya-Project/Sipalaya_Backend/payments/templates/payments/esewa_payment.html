@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}eSewa Payment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">eSewa Payment</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/esewa-logo.png' %}" alt="eSewa Logo" class="img-fluid" style="max-height: 100px;">
+                    </div>
+                    
+                    <form id="esewa-payment-form" action="{{ esewa_submit_url }}" method="POST" target="_blank">
+                        {% for key, value in payment_data.items %}
+                            <input type="hidden" name="{{ key }}" value="{{ value }}">
+                        {% endfor %}
+                        
+                        <div class="payment-details mb-4">
+                            <h5>Payment Details</h5>
+                            <table class="table">
+                                <tr>
+                                    <th>Amount:</th>
+                                    <td>Rs. {{ payment_data.amount }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Transaction ID:</th>
+                                    <td>{{ payment_data.transaction_uuid }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Merchant ID:</th>
+                                    <td>{{ payment_data.merchant_id }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg" id="esewa-pay-button">
+                                Pay with eSewa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border: none;
+    }
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+    .btn-primary {
+        background-color: #53A351;
+        border-color: #53A351;
+        padding: 10px 30px;
+    }
+    .btn-primary:hover {
+        background-color: #459143;
+        border-color: #459143;
+    }
+    .payment-details {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .table th {
+        width: 40%;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('esewa-payment-form');
+    const submitButton = document.getElementById('esewa-pay-button');
+    
+    // Log form data for debugging
+    console.log('eSewa Submit URL:', '{{ esewa_submit_url }}');
+    const formData = new FormData(form);
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+        
+        // Log the form submission
+        console.log('Submitting eSewa payment form...');
+        
+        // Submit the form
+        this.submit();
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,20 @@
+Dear {{ booking.user.get_full_name }},
+
+Thank you for booking a demo class with us! Here are your booking details:
+
+Demo Class: {{ demo_class.title }}
+Date: {{ schedule.start_time|date:"F j, Y" }}
+Time: {{ schedule.start_time|time:"g:i A" }}
+Instructor: {{ demo_class.instructor.get_full_name }}
+Course: {{ demo_class.course.title }}
+
+{% if booking.notes %}
+Your Notes: {{ booking.notes }}
+{% endif %}
+
+You can view and manage your bookings at: {{ booking_url }}
+
+If you need to cancel or reschedule, please do so at least 24 hours before the class.
+
+Best regards,
+Sipalaya Info Tech Pvt. Ltd. 

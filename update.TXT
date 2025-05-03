@@ -1,0 +1,236 @@
+📅 Day 1
+🏠 Homepage
+❌ Main Banner:
+
+🔄 Rotating slides
+
+💥 Special offers
+
+📢 Announcements
+
+👉 CTA buttons
+
+❌ Highlight Features:
+
+📋 Service overview
+
+📊 Success metrics
+
+📈 Statistics display
+
+❌ Search Functionality:
+
+🔍 Keyword search
+
+🗂️ Category search
+
+🎯 Skill level filtering
+
+📚 Courses Section
+✅ Course Categories:
+
+🗂️ Basic category model exists
+
+🏷️ Course categorization
+
+✅ Course Details:
+
+📝 Title and description
+
+⏳ Duration
+
+💵 Fee structure
+
+👨‍🏫 Instructor profile
+
+🎓 Prerequisites
+
+❌ Filters and Sorting:
+
+🔧 Advanced filtering
+
+💰 Price range filters
+
+🌟 Popularity sorting
+
+📅 Demo Classes
+✅ Online booking system:
+
+🕒 Time slot management
+
+📅 Basic calendar view
+
+💼 About Us
+❌ Company Overview:
+
+🧑‍💼 Mission/vision
+
+🏛️ History
+
+🏆 Milestones
+
+❌ Team Introduction:
+
+👩‍🏫 Instructor profiles
+
+🏅 Qualifications
+
+🎖️ Achievements
+
+❌ Partnerships:
+
+🤝 Company collaborations
+
+📜 Certification affiliations
+
+📑 Admission Process
+✅ Steps to Enroll:
+
+📝 Basic enrollment flow
+
+🏫 Course selection
+
+📋 Registration
+
+✅ Online Registration:
+
+📄 Basic form fields
+
+🏫 Course selection
+
+💳 Payment preference
+
+❌ Payment Integration:
+
+💳 eSewa/Khalti integration
+
+💸 Installment options
+
+🧾 Invoice generation
+
+👨‍🎓 Student Portal
+✅ Features:
+
+📚 Enrolled courses display
+
+📊 Basic progress tracking
+
+📝 Assignment submission
+
+📅 Basic attendance tracking
+
+❌ Advanced Features:
+
+📈 Detailed progress visualization
+
+🏅 Certificate display
+
+📆 Advanced attendance calendar
+
+👩‍🏫 Instructor Portal
+✅ Features:
+
+➕ Course management (CRUD)
+
+🧑‍🎓 Student progress tracking
+
+📤 Resource upload
+
+📑 Assignment grading
+
+💬 Feedback system
+
+💼 Job Placement
+❌ Placement Assistance:
+
+🤝 Partnership display
+
+🏢 Placement services
+
+📋 Job listings
+
+🌟 Alumni success stories
+
+📝 Blog Section
+❌ Content:
+
+📰 Blog post system
+
+🗂️ Category management
+
+📈 SEO features
+
+💬 Testimonials and Reviews
+✅ Student Feedback:
+
+📝 Written testimonials
+
+🎥 Video testimonials
+
+⭐ Rating system
+
+🗣️ Review system
+
+📞 Contact Us
+❌ Contact Form:
+
+✍️ Purpose-specific forms
+
+📝 Inquiry tracking
+
+📍 Location details
+
+📱 Social media integration
+
+⚙️ Backend Admin Panel
+✅ Basic Admin Features:
+
+👥 User management
+
+✅ Course approval
+
+🖊️ Basic content management
+
+❌ Advanced Admin Features:
+
+💰 Financial reporting
+
+🧾 Payment tracking
+
+📊 Advanced analytics
+
+🎯 Completed Major Components:
+🧑‍🏫 Core Learning Management System:
+📚 Course management
+
+👨‍🎓 Student enrollment
+
+📝 Assignment system
+
+📂 Resource management
+
+📊 Basic progress tracking
+
+👥 User Management:
+🧑‍🎓 Student registration
+
+👩‍🏫 Instructor registration
+
+🔑 Role-based access
+
+👤 Profile management
+
+⭐ Testimonials System:
+📝 Review submission
+
+⭐ Rating system
+
+✅ Approval workflow
+
+🗓️ Basic Demo Class System:
+📅 Scheduling
+
+📝 Booking
+
+📅 Basic calendar
+

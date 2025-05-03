@@ -1,0 +1,60 @@
+{% extends 'demo_classes/base.html' %}
+
+{% block page_title %}Create Demo Class{% endblock %}
+
+{% block demo_content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Create New Demo Class</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_course">Course</label>
+                        <select name="course" id="id_course" class="form-control" required>
+                            <option value="">Select a course</option>
+                            {% for course in form.course.field.queryset %}
+                                <option value="{{ course.id }}">{{ course.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_title">Title</label>
+                        <input type="text" name="title" id="id_title" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_description">Description</label>
+                        <textarea name="description" id="id_description" class="form-control" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_instructor">Instructor</label>
+                        <select name="instructor" id="id_instructor" class="form-control" required>
+                            <option value="">Select an instructor</option>
+                            {% for instructor in form.instructor.field.queryset %}
+                                <option value="{{ instructor.id }}">{{ instructor.get_full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_max_participants">Maximum Participants</label>
+                        <input type="number" name="max_participants" id="id_max_participants" class="form-control" min="1" required>
+                    </div>
+                    
+                    <div class="text-right">
+                        <a href="{% url 'demo_classes:list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Create Demo Class</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

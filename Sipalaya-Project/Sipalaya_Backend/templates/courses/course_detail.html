@@ -1,0 +1,258 @@
+{% extends 'protected_page.html' %}
+
+{% block content %}
+<style>
+    /* Responsive Course Detail Page */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.course-detail {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.course-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.course-header h2 {
+    font-size: 28px;
+    color: #333;
+}
+
+.category {
+    font-size: 16px;
+    color: #777;
+}
+
+.course-info p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.price {
+    font-size: 22px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.description {
+    color: #555;
+    line-height: 1.6;
+}
+
+.course-syllabus, .course-prerequisites {
+    margin-top: 20px;
+}
+
+.course-syllabus h3, .course-prerequisites h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.course-syllabus ul, .course-prerequisites ul {
+    padding-left: 20px;
+}
+
+.course-syllabus li, .course-prerequisites li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.course-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background: #495057;
+}
+
+.btn-login {
+    background: #dc3545;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-login:hover {
+    background: #c82333;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+    }
+    .course-header h2 {
+        font-size: 24px;
+    }
+    .btn {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+}
+
+.rating {
+    color: #ddd;
+    font-size: 20px;
+}
+
+.rating .star.filled {
+    color: #ffd700;
+}
+
+.course-reviews .card {
+    transition: transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-reviews .card:hover {
+    transform: translateY(-3px);
+}
+
+</style>
+{% if user.is_authenticated %}
+
+<div class="container">
+    <div class="course-detail">
+        <div class="course-header">
+            <h2>{{ course.title }}</h2>
+            <p class="category"><strong>Category:</strong> {{ course.category.name }}</p>
+        </div>
+        
+        <div class="course-info">
+            <p><strong>Instructor:</strong> {{ course.instructor.get_full_name }}</p>
+            <p><strong>Duration:</strong> {{ course.get_duration_display }}</p>
+            <p><strong>Skill Level:</strong> {{ course.get_skill_level_display }}</p>
+            <p><strong>Price:</strong> <span class="price">Rs {{ course.price }}</span></p>
+            <p><strong>Description:</strong></p>
+            <p class="description">{{ course.description }}</p>
+        </div>
+
+        <div class="course-syllabus">
+            <h3>Syllabus</h3>
+            <ul>
+                {% for item in syllabus_items %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="course-prerequisites">
+            <h3>Prerequisites</h3>
+            <ul>
+                {% for prerequisite in prerequisites %}
+                    <li>{{ prerequisite }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="course-reviews mt-4">
+            <h3>Student Reviews</h3>
+            <div id="reviews-container">
+                <!-- Reviews will be loaded here via AJAX -->
+            </div>
+            {% if user.is_authenticated %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'testimonials:add_review' course.id %}" class="btn btn-primary">Write a Review</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="course-actions">
+            {% if not is_enrolled %}
+                <a href="{% url 'payment_page' course.id %}" class="enroll-btn">Enroll Now</a>
+            {% else %}
+                <button class="enroll-btn" disabled>Already Enrolled</button>
+            {% endif %}
+            <a href="{% url 'demo_classes:list' %}?course={{ course.id }}" class="demo-class-btn">Schedule Demo Class</a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load reviews via AJAX
+    fetch(`/testimonials/reviews/{{ course.id }}/`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('reviews-container');
+            if (data.reviews.length === 0) {
+                container.innerHTML = '<p class="text-center">No reviews yet. Be the first to review this course!</p>';
+                return;
+            }
+            
+            let reviewsHtml = '<div class="row">';
+            data.reviews.forEach(review => {
+                reviewsHtml += `
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${review.student_name}</h5>
+                                <div class="rating">
+                                    ${Array(5).fill().map((_, i) => 
+                                        `<span class="star ${i < review.rating ? 'filled' : ''}">★</span>`
+                                    ).join('')}
+                                </div>
+                                <p class="card-text">${review.content}</p>
+                                <small class="text-muted">${review.created_at}</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            reviewsHtml += '</div>';
+            container.innerHTML = reviewsHtml;
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+            document.getElementById('reviews-container').innerHTML = 
+                '<p class="text-center text-danger">Error loading reviews. Please try again later.</p>';
+        });
+});
+</script>
+
+{% else %}
+    <div class="login-prompt">
+        <a href="{% url 'login' %}" class="btn btn-login">Login to Purchase</a>
+    </div>
+{% endif %}
+{% endblock %}

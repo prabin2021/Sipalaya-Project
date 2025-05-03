@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Schedule Demo Class{% endblock %}
+
+{% block content %}
+<div class="demo-class-container">
+    <h2>Schedule a Demo Class</h2>
+    
+    {% if course %}
+    <div class="course-info">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description|truncatewords:30 }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="demo-schedule">
+        <h3>Available Demo Classes</h3>
+        
+        {% if demo_classes %}
+        <div class="demo-classes-grid">
+            {% for demo in demo_classes %}
+            <div class="demo-class-card">
+                <div class="demo-date">
+                    <i class="fas fa-calendar"></i>
+                    {{ demo.date|date:"F d, Y" }}
+                </div>
+                <div class="demo-time">
+                    <i class="fas fa-clock"></i>
+                    {{ demo.start_time|time:"g:i A" }} - {{ demo.end_time|time:"g:i A" }}
+                </div>
+                <div class="demo-instructor">
+                    <i class="fas fa-user"></i>
+                    {{ demo.instructor.get_full_name }}
+                </div>
+                <div class="demo-seats">
+                    <i class="fas fa-users"></i>
+                    {{ demo.current_students }}/{{ demo.max_students }} seats filled
+                </div>
+                
+                {% if demo.current_students < demo.max_students %}
+                <form method="POST" action="{% url 'register_demo_class' demo.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="register-btn">Register for Demo</button>
+                </form>
+                {% else %}
+                <button class="register-btn disabled" disabled>Class Full</button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-demos">No demo classes available at the moment. Please check back later.</p>
+        {% endif %}
+    </div>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

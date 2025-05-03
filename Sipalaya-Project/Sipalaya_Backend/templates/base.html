@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sipalaya Infotech{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#6B7280',
+                        accent: '#10B981',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- Inter Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}" class="flex items-center">
+                            <img src="{% static 'img/logo.png' %}" alt="Sipalaya Infotech Logo" class="h-12 w-auto">
+                            <span class="ml-2 text-xl font-bold text-gray-900">Sipalaya Infotech</span>
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{% if user.is_authenticated %}{% url 'protected_page' %}{% else %}{% url 'homepage' %}{% endif %}" 
+                           class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Home
+                        </a>
+                        <a href="{% url 'about' %}" 
+                           class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            About
+                        </a>
+                        <a href="{% url 'course_list' %}" 
+                           class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Courses
+                        </a>
+                        <a href="{% url 'demo_classes:list' %}" 
+                           class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Demo Classes
+                        </a>
+                        <a href="{% url 'contact' %}" 
+                           class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Contact
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'stud_dashboard' %}" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="{% url 'logout' %}" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Logout
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                            Login
+                        </a>
+                        <a href="{% url 'signup' %}" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                            Sign Up
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% block content %}
+        <!-- Search Section -->
+        <section class="py-8 bg-white mb-8">
+            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+                <form action="{% url 'search_courses' %}" method="GET" class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-grow">
+                        <input type="text" name="q" placeholder="Search courses (e.g., Python, Web Development)" 
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div class="flex gap-2">
+                        <select name="category" class="px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">All Categories</option>
+                            <option value="programming">Programming</option>
+                            <option value="design">Design</option>
+                            <option value="web">Web Development</option>
+                        </select>
+                        <select name="level" class="px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value="">All Levels</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                        <button type="submit" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Banner Section -->
+        {% include 'homepage/banner.html' %}
+
+        <!-- Features Section -->
+        <section class="py-12 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl font-bold text-center mb-12">Our Features</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for feature in features %}
+                    <div class="p-6 bg-gray-50 rounded-lg shadow-soft hover:shadow-lg transition duration-300">
+                        <div class="text-primary text-3xl mb-4">
+                            <i class="{{ feature.icon_class }}"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">{{ feature.title }}</h3>
+                        <p class="text-gray-600">{{ feature.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Sipalaya Infotech</h3>
+                    <p class="text-gray-300">Empowering students with quality IT education and training.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'stud_dashboard' %}" class="text-gray-300 hover:text-white">Dashboard</a></li>
+                        {% else %}
+                            <li><a href="{% url 'homepage' %}" class="text-gray-300 hover:text-white">Home</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'about' %}" class="text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-300 hover:text-white">Contact</a></li>
+                        <li><a href="{% url 'course_list' %}" class="text-gray-300 hover:text-white">Courses</a></li>
+                        <li><a href="{% url 'demo_classes:list' %}" class="text-gray-300 hover:text-white">Demo Classes</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-300 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center text-gray-300">
+                <p>&copy; 2025 Sipalaya Infotech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'script/nav-menu.js' %}"></script>
+    <script src="{% static 'script/banner.js' %}" defer></script>
+</body>
+</html>

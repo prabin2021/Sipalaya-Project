@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Resource - {{ resource.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h2>Confirm Resource Deletion</h2>
+                </div>
+                <div class="card-body">
+                    <p>Are you sure you want to delete the following resource?</p>
+                    <div class="resource-details">
+                        <h4>{{ resource.title }}</h4>
+                        <p><strong>Type:</strong> {{ resource.get_resource_type_display }}</p>
+                        <p><strong>Uploaded by:</strong> {{ resource.uploaded_by.get_full_name }}</p>
+                        <p><strong>Date:</strong> {{ resource.uploaded_at|date:"M d, Y" }}</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete Resource
+                            </button>
+                            <a href="{% url 'manage_course_resources' resource.course.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

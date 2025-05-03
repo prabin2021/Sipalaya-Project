@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Demo Class Schedule{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-3xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Create Demo Class Schedule
+            </h1>
+            <p class="mt-4 text-lg text-gray-500">
+                Add a new schedule for {{ demo_class.title }}
+            </p>
+        </div>
+
+        <!-- Demo Class Info -->
+        <div class="mt-8 bg-white shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900">{{ demo_class.title }}</h2>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Course</p>
+                        <p class="mt-1 text-sm text-gray-900">{{ demo_class.course.title }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Instructor</p>
+                        <p class="mt-1 text-sm text-gray-900">{{ demo_class.instructor.get_full_name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <div class="mt-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="rounded-md bg-red-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-red-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">
+                                    There were errors with your submission
+                                </h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 gap-6">
+                    <!-- Start Time -->
+                    <div>
+                        <label for="{{ form.start_time.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Start Time
+                        </label>
+                        <input type="datetime-local" name="{{ form.start_time.html_name }}" id="{{ form.start_time.id_for_label }}" 
+                               value="{{ form.start_time.value|default:'' }}"
+                               class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        {% if form.start_time.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.start_time.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- End Time -->
+                    <div>
+                        <label for="{{ form.end_time.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            End Time
+                        </label>
+                        <input type="datetime-local" name="{{ form.end_time.html_name }}" id="{{ form.end_time.id_for_label }}" 
+                               value="{{ form.end_time.value|default:'' }}"
+                               class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                        {% if form.end_time.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.end_time.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <a href="{% url 'demo_classes:detail' demo_class.id %}" 
+                       class="text-sm font-medium text-primary hover:text-blue-700">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Back to Demo Class
+                    </a>
+                    <button type="submit" 
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                        <i class="fas fa-save mr-2"></i>
+                        Create Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

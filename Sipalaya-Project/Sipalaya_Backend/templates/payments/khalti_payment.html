@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Khalti Payment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="payment-summary mb-4">
+                        <h5>Payment Summary</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Course:</strong> {{ payment.course.title }}</p>
+                                <p><strong>Amount:</strong> Rs. {{ payment.amount }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Transaction ID:</strong> {{ payment.transaction_id }}</p>
+                                {% if payment.is_installment %}
+                                <p><strong>Installment:</strong> {{ payment.installment_number }} of {{ payment.total_installments }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="khalti-payment-options mb-4">
+                        <h5>Choose Payment Method</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="payment-option-card">
+                                    <input type="radio" name="payment_type" id="khalti_wallet" value="wallet" checked>
+                                    <label for="khalti_wallet" class="payment-option-label">
+                                        <img src="{% static 'images/payment/khalti-wallet.png' %}" alt="Khalti Wallet" class="payment-option-icon">
+                                        <span>Khalti Wallet</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="payment-option-card">
+                                    <input type="radio" name="payment_type" id="khalti_bank" value="bank">
+                                    <label for="khalti_bank" class="payment-option-label">
+                                        <img src="{% static 'images/payment/khalti-bank.png' %}" alt="Bank Transfer" class="payment-option-icon">
+                                        <span>Bank Transfer</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="payment-option-card">
+                                    <input type="radio" name="payment_type" id="khalti_mobile" value="mobile">
+                                    <label for="khalti_mobile" class="payment-option-label">
+                                        <img src="{% static 'images/payment/khalti-mobile.png' %}" alt="Mobile Banking" class="payment-option-icon">
+                                        <span>Mobile Banking</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button id="payment-button" class="btn btn-primary btn-lg">
+                            <img src="{% static 'images/payment/khalti-logo.png' %}" alt="Khalti" class="khalti-logo">
+                            Pay Rs. {{ payment.amount }}
+                        </button>
+                    </div>
+
+                    <div class="payment-security-info mt-4">
+                        <div class="security-badges text-center mb-3">
+                            <img src="{% static 'images/payment/secure-payment.png' %}" alt="Secure Payment" class="security-badge">
+                            <img src="{% static 'images/payment/ssl-badge.png' %}" alt="SSL Secure" class="security-badge">
+                        </div>
+                        <p class="text-muted text-center mb-0">
+                            Your payment is processed securely through Khalti. We never store your payment details.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+<script>
+var config = {
+    "publicKey": "{{ khalti_config.public_key }}",
+    "productIdentity": "{{ khalti_config.product_identity }}",
+    "productName": "{{ khalti_config.product_name }}",
+    "productUrl": window.location.href,
+    "eventHandler": {
+        onSuccess: function(payload) {
+            // Handle success
+            console.log(payload);
+            window.location.href = "{% url 'payments:payment_success' payment.id %}";
+        },
+        onError: function(error) {
+            // Handle error
+            console.log(error);
+            alert('Payment failed. Please try again.');
+        },
+        onClose: function() {
+            // Handle close
+            console.log('Payment window closed');
+        }
+    }
+};
+
+var checkout = new KhaltiCheckout(config);
+
+document.getElementById("payment-button").onclick = function() {
+    checkout.show({
+        amount: {{ khalti_config.amount }}
+    });
+};
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.payment-option-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-option-card:hover {
+    border-color: #5C2D91;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.payment-option-label {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    cursor: pointer;
+}
+
+.payment-option-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    object-fit: contain;
+}
+
+.khalti-logo {
+    height: 24px;
+    margin-right: 10px;
+}
+
+.security-badge {
+    height: 40px;
+    margin: 0 10px;
+}
+
+.payment-summary {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.btn-primary {
+    background-color: #5C2D91;
+    border-color: #5C2D91;
+    padding: 12px 30px;
+    font-size: 1.1em;
+}
+
+.btn-primary:hover {
+    background-color: #4a2373;
+    border-color: #4a2373;
+}
+</style>
+{% endblock %} 

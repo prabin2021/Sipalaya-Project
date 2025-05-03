@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Redirecting to eSewa...</h2>
+    <p>Please wait while we redirect you to eSewa payment page.</p>
+    
+    <form id="esewaForm" action="{{ esewa_submit_url }}" method="POST">
+        {% for key, value in payment_data.items %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+    </form>
+</div>
+
+<script>
+    document.getElementById('esewaForm').submit();
+</script>
+{% endblock %}

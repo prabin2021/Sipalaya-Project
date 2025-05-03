@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Demo Class Bookings{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                My Demo Class Bookings
+            </h1>
+            <p class="mt-4 text-lg text-gray-500">
+                View and manage your upcoming demo class bookings
+            </p>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="mt-12">
+            {% if bookings %}
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {% for booking in bookings %}
+                        <div class="bg-white shadow rounded-lg overflow-hidden">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-lg font-medium text-gray-900">
+                                        {{ booking.schedule.demo_class.title }}
+                                    </h3>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if booking.status == 'confirmed' %}
+                                            bg-green-100 text-green-800
+                                        {% elif booking.status == 'cancelled' %}
+                                            bg-red-100 text-red-800
+                                        {% else %}
+                                            bg-yellow-100 text-yellow-800
+                                        {% endif %}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </div>
+                                
+                                <div class="mt-4 space-y-2">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-calendar-alt mr-2"></i>
+                                        {{ booking.schedule.start_time|date:"F j, Y" }}
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-clock mr-2"></i>
+                                        {{ booking.schedule.start_time|time:"g:i A" }} - {{ booking.schedule.end_time|time:"g:i A" }}
+                                    </div>
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-user mr-2"></i>
+                                        {{ booking.schedule.demo_class.instructor.get_full_name }}
+                                    </div>
+                                </div>
+
+                                {% if booking.notes %}
+                                    <div class="mt-4">
+                                        <p class="text-sm text-gray-500">Notes:</p>
+                                        <p class="mt-1 text-sm text-gray-900">{{ booking.notes }}</p>
+                                    </div>
+                                {% endif %}
+
+                                <div class="mt-6 flex items-center justify-between">
+                                    <a href="{% url 'demo_classes:detail' booking.schedule.demo_class.id %}" 
+                                       class="text-sm font-medium text-primary hover:text-blue-700">
+                                        View Demo Class
+                                    </a>
+                                    {% if booking.status == 'confirmed' %}
+                                        <a href="{% url 'demo_classes:cancel_booking' booking.id %}" 
+                                           class="text-sm font-medium text-red-600 hover:text-red-700">
+                                            Cancel Booking
+                                        </a>
+                                    {% endif %}
+                                    {% if booking.status == 'confirmed' and booking.schedule.start_time < now %}
+                                        {% if not booking.feedback %}
+                                            <a href="{% url 'demo_classes:submit_feedback' booking.pk %}" 
+                                               class="text-sm font-medium text-green-600 hover:text-green-700">
+                                                Submit Feedback
+                                            </a>
+                                        {% else %}
+                                            <span class="text-sm font-medium text-gray-500">
+                                                Feedback Submitted
+                                            </span>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <i class="fas fa-calendar-times text-6xl text-gray-400 mb-4"></i>
+                    <h3 class="text-lg font-medium text-gray-900">No Bookings Found</h3>
+                    <p class="mt-2 text-sm text-gray-500">
+                        You haven't booked any demo classes yet.
+                    </p>
+                    <div class="mt-6">
+                        <a href="{% url 'demo_classes:list' %}" 
+                           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            Browse Demo Classes
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Back to List -->
+        <div class="mt-8 text-center">
+            <a href="{% url 'demo_classes:list' %}" 
+               class="inline-flex items-center text-sm font-medium text-primary hover:text-blue-700">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Demo Classes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

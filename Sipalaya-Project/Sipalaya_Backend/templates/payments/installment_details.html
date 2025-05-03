@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Installment Plan Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="course-info mb-4">
+                        <h5>{{ plan.course.title }}</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Total Amount:</strong> ${{ plan.total_amount }}</p>
+                                <p><strong>Number of Installments:</strong> {{ plan.number_of_installments }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Amount per Installment:</strong> ${{ plan.amount_per_installment }}</p>
+                                <p><strong>Plan Status:</strong> 
+                                    <span class="badge {% if plan.is_active %}badge-success{% else %}badge-secondary{% endif %}">
+                                        {{ plan.is_active|yesno:"Active,Completed" }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="payment-progress mb-4">
+                        <h5>Payment Progress</h5>
+                        <div class="progress mb-2" style="height: 20px;">
+                            {% with paid_amount=plan.calculate_remaining_amount %}
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ paid_amount|div:plan.total_amount|mul:100 }}%"
+                                 aria-valuenow="{{ paid_amount|div:plan.total_amount|mul:100 }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ paid_amount|div:plan.total_amount|mul:100 }}%
+                            </div>
+                            {% endwith %}
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Paid: ${{ plan.total_amount|sub:plan.calculate_remaining_amount }}</span>
+                            <span>Remaining: ${{ plan.calculate_remaining_amount }}</span>
+                        </div>
+                    </div>
+
+                    <div class="installment-schedule">
+                        <h5>Installment Schedule</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Due Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Payment Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for payment in payments %}
+                                    <tr>
+                                        <td>{{ payment.installment_number }}</td>
+                                        <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                                        <td>${{ payment.amount }}</td>
+                                        <td>
+                                            <span class="badge {% if payment.status == 'completed' %}badge-success{% elif payment.status == 'pending' %}badge-warning{% elif payment.status == 'failed' %}badge-danger{% else %}badge-info{% endif %}">
+                                                {{ payment.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if payment.status == 'completed' %}
+                                                {{ payment.payment_date|date:"M d, Y" }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="payment-reminder mt-4">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Payment Reminder</h6>
+                            <p class="mb-0">
+                                Your next payment of ${{ plan.amount_per_installment }} is due on 
+                                <strong>{{ plan.get_next_installment_date|date:"F d, Y" }}</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'payments:payment_history' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Back to Payment History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.course-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.progress {
+    background-color: #e9ecef;
+    border-radius: 4px;
+}
+
+.progress-bar {
+    background-color: #28a745;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    line-height: 20px;
+}
+
+.badge {
+    padding: 6px 10px;
+    font-size: 0.85em;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+}
+
+.alert-info {
+    background-color: #e8f4f8;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+.alert-info h6 {
+    color: #0c5460;
+    margin-bottom: 0.5rem;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.payment-reminder {
+    border-left: 4px solid #17a2b8;
+}
+</style>
+{% endblock %} 

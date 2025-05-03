@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ demo_class.title }} - Demo Class{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <!-- Back Link -->
+        <div class="mb-8">
+            <a href="{% url 'demo_classes:list' %}" 
+               class="inline-flex items-center text-sm font-medium text-primary hover:text-blue-700">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Demo Classes
+            </a>
+        </div>
+
+        <!-- Demo Class Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                {{ demo_class.title }}
+            </h1>
+            <p class="mt-4 text-lg text-gray-500">
+                {{ demo_class.description }}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Demo Class Info -->
+            <div class="lg:col-span-2">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-6">Course Information</h2>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Course</h3>
+                                <p class="mt-1 text-lg text-gray-900">{{ demo_class.course.title }}</p>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Instructor</h3>
+                                <p class="mt-1 text-lg text-gray-900">
+                                    {% if demo_class.instructor.get_full_name %}
+                                        {{ demo_class.instructor.get_full_name }}
+                                    {% else %}
+                                        {% with instructor_profile=demo_class.instructor.instructorprofile %}
+                                            {% if instructor_profile.full_name %}
+                                                {{ instructor_profile.full_name }}
+                                            {% else %}
+                                                {{ demo_class.instructor.username }}
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500">Maximum Participants</h3>
+                                <p class="mt-1 text-lg text-gray-900">{{ demo_class.max_participants }} students</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h3 class="text-sm font-medium text-gray-500">What You'll Learn</h3>
+                            <div class="mt-4 prose prose-sm text-gray-500">
+                                {{ demo_class.description|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Schedules -->
+            <div class="lg:col-span-1">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-6">Available Time Slots</h2>
+                        
+                        {% if available_schedules %}
+                            <div class="space-y-4">
+                                {% for schedule in available_schedules %}
+                                    <div class="border rounded-lg p-4 {% if not schedule.is_booked %}hover:border-primary{% endif %}">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">
+                                                    {{ schedule.start_time|date:"l, F j, Y" }}
+                                                </p>
+                                                <p class="text-sm text-gray-500">
+                                                    {{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}
+                                                </p>
+                                            </div>
+                                            {% if not schedule.is_booked %}
+                                                <a href="{% url 'demo_classes:book' schedule.id %}" 
+                                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700">
+                                                    Book Now
+                                                </a>
+                                            {% else %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    Booked
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                                <p class="text-gray-500">No available time slots at the moment.</p>
+                                <p class="text-sm text-gray-400 mt-2">Please check back later for new schedules.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Additional Information -->
+                <div class="mt-6 bg-white shadow rounded-lg overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Important Information</h2>
+                        <ul class="space-y-3 text-sm text-gray-600">
+                            <li class="flex items-start">
+                                <i class="fas fa-clock mt-1 mr-3 text-primary"></i>
+                                <span>Demo classes are typically 1-2 hours long</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-video mt-1 mr-3 text-primary"></i>
+                                <span>Classes are conducted online via Zoom</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-calendar-alt mt-1 mr-3 text-primary"></i>
+                                <span>Booking can be cancelled up to 24 hours before the class</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

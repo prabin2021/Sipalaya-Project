@@ -9,7 +9,7 @@ urlpatterns = [
     # path('',views.basehome,name="basehome"),
     path('courses/', include('courses.urls')),
     path('stud_portal/', include('stud_portal.urls')),
-    path('instructor_portal/', include('instructor_portal.urls')),
+   
     path('', include('homepage.urls')),
     
 ]

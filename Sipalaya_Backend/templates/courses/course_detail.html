@@ -1,412 +1,181 @@
 {% extends 'protected_page.html' %}
-{% load static %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<div class="course-detail-container">
-    <div class="course-header">
-        <div class="course-image">
-            {% if course.thumbnail %}
-                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
-            {% else %}
-                <div class="no-image">
-                    <i class="fas fa-book"></i>
-                </div>
-            {% endif %}
-        </div>
-        <div class="course-info">
-            <h1>{{ course.title }}</h1>
-            <div class="course-meta">
-                <span><i class="fas fa-user"></i> {{ course.instructor.get_full_name|default:course.instructor.username }}</span>
-                <span><i class="fas fa-clock"></i> {{ course.duration }} hours</span>
-                <span><i class="fas fa-signal"></i> {{ course.level|title }}</span>
-                <span><i class="fas fa-dollar-sign"></i> Rs {{ course.price }}</span>
-            </div>
-            <div class="course-actions">
-                <a href="{% url 'enroll_course' course.id %}" class="btn btn-primary">
-                    <i class="fas fa-graduation-cap"></i> Enroll Now
-                </a>
-                <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Back to Courses
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="course-content">
-        <div class="content-section">
-            <h2>Course Description</h2>
-            <p>{{ course.description }}</p>
-        </div>
-
-        {% if announcements %}
-        <div class="content-section">
-            <h2>Latest Announcements</h2>
-            <div class="announcements-list">
-                {% for announcement in announcements %}
-                    <div class="announcement-item {% if announcement.is_important %}important{% endif %}">
-                        <div class="announcement-header">
-                            <h4>{{ announcement.title }}</h4>
-                            <span class="announcement-date">{{ announcement.created_at|date:"M d, Y" }}</span>
-                        </div>
-                        <p>{{ announcement.content }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="content-section">
-            <h2>Course Syllabus</h2>
-            <div class="lessons-list">
-                {% for lesson in lessons %}
-                    <div class="lesson-item">
-                        <div class="lesson-header">
-                            <h4>{{ lesson.title }}</h4>
-                            <span class="lesson-duration"><i class="fas fa-clock"></i> {{ lesson.duration }} minutes</span>
-                        </div>
-                        <p>{{ lesson.content }}</p>
-                        {% if lesson.video_url %}
-                            <a href="{{ lesson.video_url }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                                <i class="fas fa-play"></i> Watch Video
-                            </a>
-                        {% endif %}
-                    </div>
-                {% empty %}
-                    <p class="no-content">No lessons available yet.</p>
-                {% endfor %}
-            </div>
-        </div>
-
-        {% if materials %}
-        <div class="content-section">
-            <h2>Course Materials</h2>
-            <div class="materials-grid">
-                {% for material in materials %}
-                    <div class="material-card">
-                        <i class="fas fa-file"></i>
-                        <h4>{{ material.title }}</h4>
-                        <p>{{ material.description|truncatewords:20 }}</p>
-                        <a href="{{ material.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
-        {% if resources %}
-        <div class="content-section">
-            <h2>Additional Resources</h2>
-            <div class="resources-grid">
-                {% for resource in resources %}
-                    <div class="resource-card">
-                        <i class="fas fa-{{ resource.resource_type }}"></i>
-                        <h4>{{ resource.title }}</h4>
-                        <p>{{ resource.description|truncatewords:20 }}</p>
-                        <a href="{{ resource.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
-{% else %}
-<div class="login-prompt">
-    <i class="fas fa-lock"></i>
-    <p>Please login to view course details.</p>
-    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
-</div>
-{% endif %}
-
 <style>
-.course-detail-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    /* Responsive Course Detail Page */
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.course-detail {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .course-header {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.course-image {
-    height: 400px;
-    overflow: hidden;
-    background: #f8f9fa;
-    border-radius: 10px;
-}
-
-.course-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.no-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 5rem;
-    color: #dee2e6;
-}
-
-.course-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.course-info h1 {
-    margin: 0;
+.course-header h2 {
+    font-size: 28px;
     color: #333;
-    font-size: 2rem;
 }
 
-.course-meta {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    font-size: 1rem;
-    color: #666;
+.category {
+    font-size: 16px;
+    color: #777;
 }
 
-.course-meta span {
-    display: flex;
-    align-items: center;
+.course-info p {
+    font-size: 18px;
+    margin: 5px 0;
 }
 
-.course-meta i {
-    margin-right: 0.5rem;
-    color: #4a90e2;
+.price {
+    font-size: 22px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.description {
+    color: #555;
+    line-height: 1.6;
+}
+
+.course-syllabus, .course-prerequisites {
+    margin-top: 20px;
+}
+
+.course-syllabus h3, .course-prerequisites h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.course-syllabus ul, .course-prerequisites ul {
+    padding-left: 20px;
+}
+
+.course-syllabus li, .course-prerequisites li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
 }
 
 .course-actions {
     display: flex;
-    gap: 1rem;
-    margin-top: auto;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 18px;
+    text-align: center;
+    border-radius: 6px;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
-.btn i {
-    margin-right: 0.5rem;
-}
-
 .btn-primary {
-    background: #4a90e2;
-    color: white;
+    background: #007bff;
+    color: #fff;
 }
 
 .btn-primary:hover {
-    background: #357abd;
+    background: #0056b3;
 }
 
-.btn-outline-secondary {
-    border: 1px solid #dee2e6;
-    color: #666;
+.btn-secondary {
+    background: #6c757d;
+    color: #fff;
 }
 
-.btn-outline-secondary:hover {
-    background: #f8f9fa;
+.btn-secondary:hover {
+    background: #495057;
 }
 
-.course-content {
-    display: grid;
-    gap: 2rem;
-}
-
-.content-section {
-    background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.content-section h2 {
-    margin: 0 0 1rem;
-    color: #333;
-    font-size: 1.5rem;
-}
-
-.announcements-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.announcement-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    border-left: 4px solid #4a90e2;
-}
-
-.announcement-item.important {
-    border-left-color: #dc3545;
-}
-
-.announcement-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.announcement-header h4 {
-    margin: 0;
-    color: #333;
-}
-
-.announcement-date {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.lessons-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.lesson-item {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-
-.lesson-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.lesson-header h4 {
-    margin: 0;
-    color: #333;
-}
-
-.lesson-duration {
-    font-size: 0.9rem;
-    color: #666;
-    display: flex;
-    align-items: center;
-}
-
-.lesson-duration i {
-    margin-right: 0.5rem;
-}
-
-.materials-grid, .resources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-}
-
-.material-card, .resource-card {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1.5rem;
+.btn-login {
+    background: #dc3545;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
     text-align: center;
 }
 
-.material-card i, .resource-card i {
-    font-size: 2rem;
-    color: #4a90e2;
-    margin-bottom: 1rem;
+.btn-login:hover {
+    background: #c82333;
 }
 
-.material-card h4, .resource-card h4 {
-    margin: 0 0 0.5rem;
-    color: #333;
-}
-
-.material-card p, .resource-card p {
-    color: #666;
-    margin: 0 0 1rem;
-    font-size: 0.9rem;
-}
-
-.btn-sm {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-}
-
-.no-content {
-    text-align: center;
-    color: #666;
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.login-prompt {
-    text-align: center;
-    padding: 3rem;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.login-prompt i {
-    font-size: 3rem;
-    color: #dee2e6;
-    margin-bottom: 1rem;
-}
-
-.login-prompt p {
-    color: #666;
-    margin-bottom: 1rem;
-}
-
-@media (max-width: 768px) {
-    .course-header {
-        grid-template-columns: 1fr;
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
     }
-    
-    .course-image {
-        height: 300px;
+    .course-header h2 {
+        font-size: 24px;
     }
-    
-    .course-meta {
-        grid-template-columns: 1fr;
-    }
-    
-    .course-actions {
-        flex-direction: column;
-    }
-    
-    .course-actions .btn {
-        width: 100%;
-    }
-    
-    .materials-grid, .resources-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .lesson-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+    .btn {
+        font-size: 16px;
+        padding: 10px 15px;
     }
 }
+
 </style>
+{% if user.is_authenticated %}
+
+<div class="container">
+    <div class="course-detail">
+        <div class="course-header">
+            <h2>{{ course.title }}</h2>
+            <p class="category"><strong>Category:</strong> {{ course.category.name }}</p>
+        </div>
+        
+        <div class="course-info">
+            <p><strong>Instructor:</strong> {{ course.instructor.name }}</p>
+            <p><strong>Duration:</strong> {{ course.duration }}</p>
+            <p><strong>Fee:</strong> <span class="price">Rs {{ course.fee }}</span></p>
+            <p><strong>Description:</strong></p>
+            <p class="description">{{ course.description }}</p>
+        </div>
+
+        <div class="course-syllabus">
+            <h3>Syllabus</h3>
+            <ul>
+                {% for item in syllabus_items %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="course-prerequisites">
+            <h3>Prerequisites</h3>
+            <ul>
+                {% for prerequisite in prerequisites %}
+                    <li>{{ prerequisite }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="course-actions">
+            <a href="#" class="btn btn-primary">Buy Course</a>
+            <a href="{% url 'course_list' %}" class="btn btn-secondary">Back to Courses</a>
+        </div>
+    </div>
+</div>
+
+{% else %}
+    <div class="login-prompt">
+        <a href="{% url 'login' %}" class="btn btn-login">Login to Purchase</a>
+    </div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'protected_page.html' %}
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Submit Assignment for {{ course.title }}</h2>
+    <hr>
+    
+    <form method="POST" enctype="multipart/form-data" class="p-4 shadow-lg">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="assignment_file" class="form-label">Upload File:</label>
+            <input type="file" class="form-control" name="assignment_file" required>
+        </div>
+        <button type="submit" class="btn btn-success">Submit Assignment</button>
+    </form>
+
+    <a href="{% url 'student_dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+</div>
+{% endblock %}

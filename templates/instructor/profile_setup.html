@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Setup Instructor Profile{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Setup Your Instructor Profile</h1>
+            <p class="mt-2 text-gray-600">Tell us about yourself and your expertise</p>
+        </div>
+
+        <!-- Profile Form -->
+        <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-6">
+            {% csrf_token %}
+            
+            <!-- Bio -->
+            <div class="mb-6">
+                <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+                <textarea name="bio" id="bio" rows="4" required
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">{{ profile.bio|default:'' }}</textarea>
+                <p class="mt-1 text-sm text-gray-500">Tell students about yourself and your teaching philosophy</p>
+            </div>
+
+            <!-- Experience -->
+            <div class="mb-6">
+                <label for="experience" class="block text-sm font-medium text-gray-700">Experience</label>
+                <textarea name="experience" id="experience" rows="4" required
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">{{ profile.experience|default:'' }}</textarea>
+                <p class="mt-1 text-sm text-gray-500">Share your professional experience and expertise</p>
+            </div>
+
+            <!-- Certifications -->
+            <div class="mb-6">
+                <label for="certifications" class="block text-sm font-medium text-gray-700">Certifications</label>
+                <textarea name="certifications" id="certifications" rows="4" required
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">{{ profile.certifications|default:'' }}</textarea>
+                <p class="mt-1 text-sm text-gray-500">List your relevant certifications and qualifications</p>
+            </div>
+
+            <!-- Profile Photo -->
+            <div class="mb-6">
+                <label for="profile_photo" class="block text-sm font-medium text-gray-700">Profile Photo</label>
+                {% if profile.profile_photo %}
+                <div class="mt-2">
+                    <img src="{{ profile.profile_photo.url }}" alt="Current profile photo" class="h-32 w-32 object-cover rounded-lg">
+                </div>
+                {% endif %}
+                <input type="file" name="profile_photo" id="profile_photo" accept="image/*"
+                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-white hover:file:bg-primary-dark">
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'instructor:dashboard' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

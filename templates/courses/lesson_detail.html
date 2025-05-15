@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+        <!-- Lesson Header -->
+        <div class="border-b border-gray-200 pb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-extrabold text-gray-900">{{ lesson.title }}</h1>
+                    <p class="mt-4 text-xl text-gray-500">{{ course.title }}</p>
+                </div>
+                <a href="{% url 'course_content' course.slug %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-primary-100 hover:bg-primary-200">
+                    Back to Course
+                </a>
+            </div>
+        </div>
+
+        <!-- Lesson Content -->
+        <div class="mt-8">
+            <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:p-6">
+                    <div class="prose max-w-none">
+                        {{ lesson.content|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Section -->
+        {% if lesson.video_url %}
+            <div class="mt-8">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Video Lesson</h3>
+                        <div class="mt-4 aspect-w-16 aspect-h-9">
+                            <iframe src="{{ lesson.video_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen class="w-full h-full"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Assignments -->
+        {% if lesson.assignments.exists %}
+            <div class="mt-8">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Assignments</h3>
+                        <div class="mt-4 space-y-4">
+                            {% for assignment in lesson.assignments.all %}
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="text-base font-medium text-gray-900">{{ assignment.title }}</h4>
+                                            <p class="mt-1 text-sm text-gray-500">{{ assignment.description }}</p>
+                                            <p class="mt-2 text-sm text-gray-500">Due: {{ assignment.due_date|date:"F j, Y" }}</p>
+                                        </div>
+                                        <a href="{% url 'submit_assignment' assignment.id %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                                            Submit Assignment
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="mt-8 flex items-center justify-between">
+            {% if lesson.get_previous_lesson %}
+                <a href="{% url 'lesson_detail' course.slug lesson.get_previous_lesson.id %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-primary-100 hover:bg-primary-200">
+                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Previous Lesson
+                </a>
+            {% else %}
+                <div></div>
+            {% endif %}
+
+            {% if lesson.get_next_lesson %}
+                <a href="{% url 'lesson_detail' course.slug lesson.get_next_lesson.id %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary bg-primary-100 hover:bg-primary-200">
+                    Next Lesson
+                    <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            {% else %}
+                <div></div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

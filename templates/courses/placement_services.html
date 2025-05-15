@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Placement Services{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Placement Services</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            We partner with leading companies to help our students launch their careers in the IT industry.
+        </p>
+    </div>
+
+    <!-- Services Section -->
+    <div class="max-w-7xl mx-auto mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Our Services</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for service in services %}
+            <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+                <div class="text-primary text-4xl mb-4">
+                    <i class="{{ service.icon }}"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ service.title }}</h3>
+                <p class="text-gray-600">{{ service.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Company Partnerships -->
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Our Partners</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for company in partnerships %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                {% if company.logo %}
+                <div class="h-48 bg-gray-100 flex items-center justify-center p-6">
+                    <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="max-h-full max-w-full object-contain">
+                </div>
+                {% endif %}
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">{{ company.name }}</h3>
+                    <p class="text-gray-600 mb-4">{{ company.description }}</p>
+                    {% if company.website %}
+                    <a href="{{ company.website }}" target="_blank" rel="noopener noreferrer"
+                       class="text-primary hover:text-primary-dark font-medium">
+                        Visit Website <i class="fas fa-external-link-alt ml-1"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="max-w-4xl mx-auto mt-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Ready to Start Your Career?</h2>
+        <p class="text-xl text-gray-600 mb-8">
+            Browse our current job openings and take the first step towards your dream career.
+        </p>
+        <a href="{% url 'courses:job_listings' %}" 
+           class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+            View Job Listings
+        </a>
+    </div>
+</div>
+{% endblock %} 

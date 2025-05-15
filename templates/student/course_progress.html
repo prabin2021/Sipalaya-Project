@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load student_filters %}
+
+{% block title %}Course Progress - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Course Header -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ course.title }}</h1>
+                        <p class="text-gray-600">{{ course.description }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Overall Progress</p>
+                        <p class="text-2xl font-bold text-primary">{{ progress_percentage|floatformat:1 }}%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Overview -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Progress Overview</h2>
+                <div class="space-y-4">
+                    {% for module in modules %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-medium text-gray-900">{{ module.title }}</h3>
+                            <span class="text-sm text-gray-500">
+                                {% with progress=module_progress|get_item:module.id %}
+                                {{ progress.completed }}/{{ progress.total }} lessons
+                                {% endwith %}
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" 
+                                 style="width: {% with progress=module_progress|get_item:module.id %}{{ progress.percentage }}{% endwith %}%"></div>
+                        </div>
+                        <div class="mt-2 text-sm text-gray-500">
+                            {% with progress=module_progress|get_item:module.id %}
+                            {{ progress.percentage|floatformat:1 }}% complete
+                            {% endwith %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson Progress -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Lesson Progress</h2>
+                <div class="space-y-4">
+                    {% for module in modules %}
+                    <div class="border border-gray-200 rounded-lg">
+                        <div class="p-4 bg-gray-50">
+                            <h3 class="font-medium text-gray-900">{{ module.title }}</h3>
+                        </div>
+                        <div class="p-4">
+                            <ul class="space-y-2">
+                                {% for lesson in lessons %}
+                                {% if lesson.module == module %}
+                                <li class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span class="mr-2">
+                                            {% if progress_dict|get_item:lesson.id %}
+                                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            {% else %}
+                                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-gray-700">{{ lesson.title }}</span>
+                                    </div>
+                                    <a href="{% url 'student:lesson_detail' course.slug lesson.id %}" 
+                                       class="text-primary hover:text-primary-dark text-sm">
+                                        {% if progress_dict|get_item:lesson.id %}
+                                        Review Lesson
+                                        {% else %}
+                                        Start Lesson
+                                        {% endif %}
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="mt-8 text-center">
+            <a href="{% url 'student:course_content' course.slug %}" 
+               class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                Back to Course
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

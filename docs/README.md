@@ -1,19 +1,5 @@
 # Sipalaya Info Tech - Educational Platform Documentation
 
-## Table of Contents
-1. [Introduction](#introduction)
-2. [Project Overview](#project-overview)
-3. [Technology Stack](#technology-stack)
-4. [System Architecture](#system-architecture)
-5. [Application Structure](#application-structure)
-6. [Database Schema](#database-schema)
-7. [Features and Functionality](#features-and-functionality)
-8. [API Documentation](#api-documentation)
-9. [Installation and Setup](#installation-and-setup)
-10. [Deployment Guide](#deployment-guide)
-11. [Security Measures](#security-measures)
-12. [Conclusion](#conclusion)
-
 ## 1. Introduction
 
 Sipalaya Info Tech's Educational Platform is a comprehensive web application designed to facilitate online learning and training management. The platform serves as a bridge between students seeking IT education and experienced instructors, offering a wide range of courses, interactive learning materials, and administrative tools.
@@ -262,62 +248,7 @@ GET /api/enrollments/course/<id>/
 - pip
 - virtualenv
 
-### Installation Steps
-1. Clone the repository
-   ```bash
-   git clone <repository-url>
-   ```
-
-2. Create and activate virtual environment
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configure environment variables
-   ```bash
-   cp .env.example .env
-   # Edit .env with your settings
-   ```
-
-5. Run migrations
-   ```bash
-   python manage.py migrate
-   ```
-
-6. Create superuser
-   ```bash
-   python manage.py createsuperuser
-   ```
-
-7. Run development server
-   ```bash
-   python manage.py runserver
-   ```
-
-## 10. Deployment Guide
-
-### Server Requirements
-- Ubuntu 20.04 LTS
-- Nginx
-- Gunicorn
-- PostgreSQL
-- Redis (for caching)
-
-### Deployment Steps
-1. Set up server environment
-2. Configure Nginx
-3. Set up SSL certificates
-4. Configure database
-5. Deploy application
-6. Set up monitoring
-
-## 11. Security Measures
+## 10. Security Measures
 
 ### Authentication
 - Custom user model
@@ -336,7 +267,7 @@ GET /api/enrollments/course/<id>/
 - Payment data encryption
 - Transaction logging
 
-## 12. Conclusion
+## 11. Conclusion
 
 The Sipalaya Info Tech Educational Platform is a robust and scalable solution for online education management. The system successfully implements all required features while maintaining security, performance, and user experience.
 

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Options - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-2xl font-bold mb-4">Payment Options for {{ course.title }}</h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-2">Course Details</h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Price:</span>
+                        <span class="font-medium">NPR {{ course.price }}</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-gray-600">Duration:</span>
+                        <span class="font-medium">{{ course.duration }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" action="{% url 'courses:initiate_payment' slug=course.slug %}" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-3">Select Payment Type</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="payment_type" value="full" checked class="form-radio text-purple-600">
+                            <span>Full Payment (NPR {{ course.price }})</span>
+                        </label>
+                        <label class="flex items-center space-x-3">
+                            <input type="radio" name="payment_type" value="installment" class="form-radio text-purple-600">
+                            <span>Installment Payment</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="installment-options" class="hidden">
+                    <h3 class="text-lg font-semibold mb-3">Select Number of Installments</h3>
+                    <select name="installments" class="w-full border rounded-lg p-2">
+                        <option value="2">2 Installments</option>
+                        <option value="3">3 Installments</option>
+                        <option value="4">4 Installments</option>
+                    </select>
+                    <p class="text-sm text-gray-600 mt-2">
+                        Note: A 10% interest will be added to the total amount for installment payments.
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="inline-block bg-purple-600 text-white px-8 py-3 rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium">
+                        Pay with Khalti
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide installment options based on payment type selection
+    document.querySelectorAll('input[name="payment_type"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const installmentOptions = document.getElementById('installment-options');
+            installmentOptions.classList.toggle('hidden', this.value === 'full');
+        });
+    });
+</script>
+{% endblock %} 

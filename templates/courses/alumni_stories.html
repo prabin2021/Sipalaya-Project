@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Alumni Success Stories{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Alumni Success Stories</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Discover how our graduates have transformed their careers through our training programs.
+        </p>
+    </div>
+
+    <!-- Featured Stories -->
+    {% if featured_stories %}
+    <div class="max-w-7xl mx-auto mb-16">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Success Stories</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {% for story in featured_stories %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-start space-x-4">
+                        {% if story.photo %}
+                        <img src="{{ story.photo.url }}" alt="{{ story.student.get_full_name }}" 
+                             class="w-24 h-24 rounded-full object-cover">
+                        {% else %}
+                        <div class="w-24 h-24 rounded-full bg-primary bg-opacity-10 flex items-center justify-center">
+                            <i class="fas fa-user text-4xl text-primary"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900">{{ story.student.get_full_name }}</h3>
+                            <p class="text-primary font-medium">{{ story.position }}</p>
+                            <p class="text-gray-600">{{ story.company.name }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-gray-600 italic">"{{ story.testimonial }}"</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-sm text-gray-500">
+                        <i class="fas fa-graduation-cap mr-2"></i>
+                        <span>Completed {{ story.course.title }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Stories -->
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Recent Success Stories</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for story in recent_stories %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-center space-x-4 mb-4">
+                        {% if story.photo %}
+                        <img src="{{ story.photo.url }}" alt="{{ story.student.get_full_name }}" 
+                             class="w-16 h-16 rounded-full object-cover">
+                        {% else %}
+                        <div class="w-16 h-16 rounded-full bg-primary bg-opacity-10 flex items-center justify-center">
+                            <i class="fas fa-user text-2xl text-primary"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h3 class="font-bold text-gray-900">{{ story.student.get_full_name }}</h3>
+                            <p class="text-primary text-sm">{{ story.position }}</p>
+                            <p class="text-gray-600 text-sm">{{ story.company.name }}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm">"{{ story.testimonial|truncatechars:150 }}"</p>
+                    <div class="mt-4 flex items-center text-xs text-gray-500">
+                        <i class="fas fa-graduation-cap mr-1"></i>
+                        <span>{{ story.course.title }}</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-users text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Success Stories Yet</h3>
+                <p class="text-gray-600">Be the first to share your success story!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="max-w-4xl mx-auto mt-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Ready to Start Your Journey?</h2>
+        <p class="text-xl text-gray-600 mb-8">
+            Join our community of successful graduates and transform your career.
+        </p>
+        <a href="{% url 'courses:course_list' %}" 
+           class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+            Explore Our Courses
+        </a>
+    </div>
+</div>
+{% endblock %} 

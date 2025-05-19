@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load student_extras %}
+
+{% block title %}{{ course.title }} - Course Content{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Course Content Sidebar -->
+        <div class="lg:w-1/4">
+            <div class="bg-white rounded-lg shadow-lg p-6 sticky top-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Course Content</h2>
+                
+                {% if enrollment %}
+                <!-- Progress Overview -->
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>Overall Progress</span>
+                        <span>{{ course_progress|floatformat:1 }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-primary h-2 rounded-full" style="width: {{ course_progress }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Course Modules -->
+                <div class="space-y-4">
+                    {% for module in modules %}
+                    <div class="border border-gray-200 rounded-lg">
+                        <div class="p-4 bg-gray-50">
+                            <h3 class="font-medium text-gray-900">{{ module.title }}</h3>
+                        </div>
+                        <div class="p-2">
+                            <ul class="space-y-1">
+                                {% for lesson in module.lessons.all %}
+                                <li>
+                                    <a href="{% url 'student:lesson_detail' course.slug lesson.id %}" 
+                                       class="flex items-center p-2 rounded-md hover:bg-gray-50 {% if progress_dict|get_item:lesson.id %}text-primary{% else %}text-gray-600{% endif %}">
+                                        <span class="mr-2">
+                                            {% if progress_dict|get_item:lesson.id %}
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            {% else %}
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            {% endif %}
+                                        </span>
+                                        {{ lesson.title }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <!-- Preview Content for Non-Enrolled Users -->
+                <div class="space-y-4">
+                    {% for module in modules %}
+                    <div class="border border-gray-200 rounded-lg">
+                        <div class="p-4 bg-gray-50">
+                            <h3 class="font-medium text-gray-900">{{ module.title }}</h3>
+                        </div>
+                        <div class="p-2">
+                            <ul class="space-y-1">
+                                {% for lesson in module.lessons.all %}
+                                <li class="flex items-center p-2 rounded-md text-gray-600">
+                                    <span class="mr-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                        </svg>
+                                    </span>
+                                    {{ lesson.title }}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="lg:w-3/4">
+            <!-- Course Header -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ course.title }}</h1>
+                        <p class="text-gray-600">{{ course.description }}</p>
+                    </div>
+                    {% if enrollment %}
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">Enrolled on</p>
+                        <p class="text-gray-900">{{ enrollment.enrolled_at|date:"F d, Y" }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Course Information -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Course Duration</h3>
+                    <p class="text-gray-600">{{ course.duration_weeks }} weeks</p>
+                    <p class="text-gray-600">{{ course.duration }} hours</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Course Level</h3>
+                    <p class="text-gray-600">{{ course.get_level_display }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Instructor</h3>
+                    <p class="text-gray-600">{{ course.instructor.get_full_name|default:course.instructor.email }}</p>
+                </div>
+            </div>
+
+            {% if enrollment %}
+            <!-- Course Reviews Section (Only for enrolled students) -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900">Course Reviews</h2>
+                    {% if user_review %}
+                    <a href="{% url 'student:edit_review' course.slug %}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                        Edit Your Review
+                    </a>
+                    {% else %}
+                    <a href="{% url 'student:add_review' course.slug %}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                        Write a Review
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Average Rating -->
+                {% if course.reviews.exists %}
+                <div class="mb-6">
+                    <div class="flex items-center">
+                        <div class="flex items-center">
+                            <span class="text-3xl font-bold text-gray-900">{{ avg_rating|floatformat:1 }}</span>
+                            <span class="text-yellow-400 text-2xl ml-2">★</span>
+                        </div>
+                        <span class="ml-2 text-gray-600">out of 5</span>
+                        <span class="ml-2 text-gray-500">({{ course.reviews.count }} reviews)</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Reviews List -->
+                <div class="space-y-6">
+                    {% for review in course.reviews.all %}
+                    <div class="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                        <div class="flex items-center mb-2">
+                            <div class="flex items-center">
+                                {% for i in "12345" %}
+                                <span class="{% if forloop.counter <= review.rating %}text-yellow-400{% else %}text-gray-300{% endif %}">★</span>
+                                {% endfor %}
+                            </div>
+                            <span class="ml-2 text-sm text-gray-500">{{ review.created_at|date:"F j, Y" }}</span>
+                        </div>
+                        <p class="text-gray-600">{{ review.comment }}</p>
+                        <p class="mt-2 text-sm text-gray-500">By {{ review.student.get_full_name|default:review.student.email }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500">No reviews yet. Be the first to review this course!</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Course Modules (for enrolled students) -->
+            <div class="space-y-6">
+                {% for module in modules %}
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ module.title }}</h2>
+                        <div class="space-y-4">
+                            {% for lesson in module.lessons.all %}
+                            <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <span class="mr-4">
+                                        {% if progress_dict|get_item:lesson.id %}
+                                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        {% else %}
+                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                        {% endif %}
+                                    </span>
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">{{ lesson.title }}</h3>
+                                        <p class="text-sm text-gray-500">{{ lesson.content|truncatewords:20 }}</p>
+                                    </div>
+                                </div>
+                                <a href="{% url 'student:lesson_detail' course.slug lesson.id %}" 
+                                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                                    {% if progress_dict|get_item:lesson.id %}
+                                    Review Lesson
+                                    {% else %}
+                                    Start Lesson
+                                    {% endif %}
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- Enrollment CTA for Non-Enrolled Users -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Ready to Start Learning?</h2>
+                    <p class="text-gray-600 mb-6">Enroll now to get access to all course materials and start your learning journey.</p>
+                    <a href="{% url 'courses:enroll' course.slug %}" 
+                       class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                        Enroll Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Preview of Course Content -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Course Preview</h2>
+                <div class="prose max-w-none">
+                    <p class="text-gray-600">{{ course.syllabus }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any JavaScript for course content interaction here
+</script>
+{% endblock %} 

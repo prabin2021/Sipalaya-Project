@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Sipalaya Info Tech{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Search and Filter Section -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <form method="GET" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Category Filter -->
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                    <select name="category" id="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Level Filter -->
+                <div>
+                    <label for="level" class="block text-sm font-medium text-gray-700">Level</label>
+                    <select name="level" id="level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if current_level == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if current_level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if current_level == 'advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                </div>
+
+                <!-- Duration Filter -->
+                <div>
+                    <label for="duration" class="block text-sm font-medium text-gray-700">Duration</label>
+                    <select name="duration" id="duration" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        <option value="">All Durations</option>
+                        <option value="short" {% if current_duration == 'short' %}selected{% endif %}>Short-term (1-4 weeks)</option>
+                        <option value="medium" {% if current_duration == 'medium' %}selected{% endif %}>Medium-term (5-8 weeks)</option>
+                        <option value="long" {% if current_duration == 'long' %}selected{% endif %}>Long-term (9+ weeks)</option>
+                    </select>
+                </div>
+
+                <!-- Price Range -->
+                <div>
+                    <label for="price_range" class="block text-sm font-medium text-gray-700">Price Range</label>
+                    <div class="mt-1 flex space-x-2">
+                        <input type="number" name="price_min" placeholder="Min" value="{{ price_min }}"
+                            class="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        <input type="number" name="price_max" placeholder="Max" value="{{ price_max }}"
+                            class="block w-1/2 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <label for="sort" class="text-sm font-medium text-gray-700">Sort by:</label>
+                    <select name="sort" id="sort" class="rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="popularity" {% if current_sort == 'popularity' %}selected{% endif %}>Most Popular</option>
+                        <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    </select>
+                </div>
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                    Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Course Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for course in courses %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-48 object-cover">
+                {% endif %}
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-primary">{{ course.category.name }}</span>
+                        <span class="text-sm text-gray-500">{{ course.duration_weeks }} weeks</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
+                    <p class="text-gray-600 mb-4">{{ course.description|truncatewords:30 }}</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-lg font-bold text-primary">${{ course.price }}</span>
+                        <a href="{% url 'courses:course_detail' course.slug %}" class="text-primary hover:text-primary-dark">
+                            Learn More →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-full text-center py-12">
+                <p class="text-gray-500 text-lg">No courses found matching your criteria.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

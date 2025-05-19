@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Write a Review - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Write a Review</h1>
+                <p class="text-gray-600 mb-6">Share your experience with {{ course.title }}</p>
+
+                <form method="post" id="review-form" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <!-- Star Rating -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">
+                            Rating <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center space-x-1" id="star-rating">
+                            {% for i in "12345" %}
+                            <label class="cursor-pointer p-2">
+                                <input type="radio" name="rating" value="{{ i }}" class="hidden" required>
+                                <svg class="w-10 h-10 text-gray-300 hover:text-yellow-400 transition-colors duration-200" 
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                </svg>
+                            </label>
+                            {% endfor %}
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2" id="rating-text">Select a rating</p>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="space-y-2">
+                        <label for="id_content" class="block text-sm font-medium text-gray-700">
+                            Review <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="comment" id="id_content" rows="6" required
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end space-x-4">
+                        <a href="{% url 'student:course_content' course.slug %}" 
+                           class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark">
+                            Submit Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const starRating = document.getElementById('star-rating');
+    const ratingText = document.getElementById('rating-text');
+    const ratingInputs = document.querySelectorAll('input[name="rating"]');
+    const stars = document.querySelectorAll('#star-rating svg');
+    
+    const ratingDescriptions = {
+        '1': 'Poor - Not worth the time',
+        '2': 'Fair - Could be better',
+        '3': 'Good - Met expectations',
+        '4': 'Very Good - Great experience',
+        '5': 'Excellent - Highly recommended'
+    };
+
+    // Function to update stars and text
+    function updateRating(rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('text-gray-300');
+                star.classList.add('text-yellow-400');
+            } else {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-300');
+            }
+        });
+        ratingText.textContent = ratingDescriptions[rating];
+    }
+
+    // Handle star clicks
+    stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+            const rating = index + 1;
+            const radioInput = ratingInputs[index];
+            radioInput.checked = true;
+            updateRating(rating);
+        });
+
+        star.addEventListener('mouseenter', () => {
+            const rating = index + 1;
+            updateRating(rating);
+        });
+    });
+
+    // Handle mouse leave
+    starRating.addEventListener('mouseleave', () => {
+        const checkedInput = document.querySelector('input[name="rating"]:checked');
+        if (checkedInput) {
+            updateRating(checkedInput.value);
+        } else {
+            stars.forEach(star => {
+                star.classList.remove('text-yellow-400');
+                star.classList.add('text-gray-300');
+            });
+            ratingText.textContent = 'Select a rating';
+        }
+    });
+
+    // Initialize with any pre-selected value
+    const checkedInput = document.querySelector('input[name="rating"]:checked');
+    if (checkedInput) {
+        updateRating(checkedInput.value);
+    }
+});
+</script>
+{% endblock %}
+{% endblock %} 

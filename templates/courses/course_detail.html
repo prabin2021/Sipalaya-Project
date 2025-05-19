@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Sipalaya Info Tech{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Course Header -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="relative">
+            {% if course.image %}
+                <img src="{{ course.image.url }}" alt="{{ course.title }}" class="w-full h-64 object-cover">
+            {% endif %}
+            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="text-center text-white">
+                    <h1 class="text-4xl font-bold mb-4">{{ course.title }}</h1>
+                    <p class="text-xl">{{ course.description }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Course Details</h3>
+                    <ul class="space-y-2">
+                        <li><span class="font-medium">Level:</span> {{ course.get_level_display }}</li>
+                        <li><span class="font-medium">Duration:</span> {{ course.get_duration_display }}</li>
+                        <li><span class="font-medium">Price:</span> ${{ course.price }}</li>
+                        <li><span class="font-medium">Enrollment Deadline:</span> {{ course.enrollment_deadline }}</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Instructor</h3>
+                    {% if course.instructor %}
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                {% if course.instructor.instructor_profile.profile_photo %}
+                                    <img src="{{ course.instructor.instructor_profile.profile_photo.url }}" 
+                                         alt="{{ course.instructor.get_full_name }}" 
+                                         class="w-16 h-16 rounded-full object-cover">
+                                {% else %}
+                                    <div class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                        <span class="text-2xl text-gray-600">{{ course.instructor.get_full_name|make_list|first }}</span>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <p class="font-medium">{{ course.instructor.get_full_name }}</p>
+                                    <p class="text-sm text-gray-600">{{ course.instructor.email }}</p>
+                                </div>
+                            </div>
+                            {% if course.instructor.instructor_profile %}
+                                <div class="mt-4">
+                                    <h4 class="font-medium mb-2">About the Instructor</h4>
+                                    <p class="text-gray-600 mb-3">{{ course.instructor.instructor_profile.bio }}</p>
+                                    
+                                    <h4 class="font-medium mb-2">Experience</h4>
+                                    <p class="text-gray-600 mb-3">{{ course.instructor.instructor_profile.experience }}</p>
+                                    
+                                    <h4 class="font-medium mb-2">Certifications</h4>
+                                    <p class="text-gray-600">{{ course.instructor.instructor_profile.certifications }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600">Instructor information not available</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Prerequisites</h3>
+                    <p class="text-gray-600">{{ course.prerequisites }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <!-- Syllabus -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-4">Course Syllabus</h2>
+                <div class="prose max-w-none">
+                    {{ course.syllabus|linebreaks }}
+                </div>
+            </div>
+
+            <!-- Modules -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold mb-4">Course Modules</h2>
+                <div class="space-y-4">
+                    {% for module in course.modules.all %}
+                        <div class="border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold mb-2">{{ module.title }}</h3>
+                            <p class="text-gray-600 mb-4">{{ module.description }}</p>
+                            <div class="space-y-2">
+                                {% for lesson in module.lessons.all %}
+                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                        <span>{{ lesson.title }}</span>
+                                        {% if user.is_authenticated and user in course.enrollments.all %}
+                                            <a href="{% url 'lesson_detail' course.slug lesson.id %}" class="text-primary hover:text-primary-dark">
+                                                View Lesson →
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-8">
+            <!-- Demo Class Booking -->
+            {% if course.demo_class_available %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4">Book a Demo Class</h2>
+                    {% if demo_classes %}
+                        <div class="space-y-4">
+                            {% for demo in demo_classes %}
+                                <div class="border rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="font-medium">{{ demo.date|date:"F j, Y" }}</span>
+                                        <span class="text-sm text-gray-600">{{ demo.start_time|time:"g:i A" }} - {{ demo.end_time|time:"g:i A" }}</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-2">
+                                        {{ demo.current_participants }} / {{ demo.max_participants }} spots filled
+                                    </p>
+                                    {% if user.is_authenticated %}
+                                        {% if demo.current_participants < demo.max_participants %}
+                                            <form method="POST" action="{% url 'courses:book_demo_class' demo.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                                                    Book Now
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button disabled class="w-full bg-gray-300 text-gray-600 px-4 py-2 rounded-md cursor-not-allowed">
+                                                Class Full
+                                            </button>
+                                        {% endif %}
+                                    {% else %}
+                                        <a href="{% url 'account_login' %}" class="block text-center bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                                            Login to Book
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600">No demo classes available at the moment.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <!-- Enrollment -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-4">Enroll Now</h2>
+                <p class="text-gray-600 mb-4">Start your learning journey today!</p>
+                {% if user.is_authenticated %}
+                    {% if user in course.enrollments.all %}
+                        <a href="{% url 'courses:course_content' course.slug %}" class="block text-center bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                            Continue Learning
+                        </a>
+                    {% else %}
+                        <form method="POST" action="{% url 'courses:enroll_course' course.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                                Enroll Now - ${{ course.price }}
+                            </button>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'account_login' %}" class="block text-center bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
+                        Login to Enroll
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

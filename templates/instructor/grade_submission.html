@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Grade Submission - {{ submission.assignment.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Grade Submission</h1>
+            <p class="mt-2 text-gray-600">
+                Review and grade the submission for {{ submission.assignment.title }}
+            </p>
+        </div>
+
+        <!-- Submission Details -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Student Information</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Student Name</p>
+                            <p class="text-gray-900">{{ submission.student.get_full_name|default:submission.student.email }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Course</p>
+                            <p class="text-gray-900">{{ submission.assignment.lesson.course.title }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Submitted On</p>
+                            <p class="text-gray-900">{{ submission.submitted_at|date:"F d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Assignment Details</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Assignment Title</p>
+                            <p class="text-gray-900">{{ submission.assignment.title }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Due Date</p>
+                            <p class="text-gray-900">{{ submission.assignment.due_date|date:"F d, Y H:i" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p class="text-gray-900">
+                                {% if submission.submitted_at > submission.assignment.due_date %}
+                                <span class="text-red-600">Late Submission</span>
+                                {% else %}
+                                <span class="text-green-600">On Time</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission Content -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Submission Content</h2>
+            <div class="prose max-w-none">
+                {{ submission.content|linebreaks }}
+            </div>
+            {% if submission.file %}
+            <div class="mt-4">
+                <a href="{{ submission.file.url }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download Submission File
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Grading Form -->
+        <form method="post" class="bg-white rounded-lg shadow-lg p-6">
+            {% csrf_token %}
+            
+            <!-- Grade -->
+            <div class="mb-6">
+                <label for="{{ form.grade.id_for_label }}" class="block text-sm font-medium text-gray-700">Grade (0-100)</label>
+                {{ form.grade }}
+                {% if form.grade.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.grade.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Feedback -->
+            <div class="mb-6">
+                <label for="{{ form.feedback.id_for_label }}" class="block text-sm font-medium text-gray-700">Feedback</label>
+                {{ form.feedback }}
+                {% if form.feedback.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.feedback.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'instructor:assignment_submissions' submission.assignment.id %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    Submit Grade
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any JavaScript for form validation or enhancement here
+    });
+</script>
+{% endblock %} 

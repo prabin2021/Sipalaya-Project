@@ -73,7 +73,7 @@
                             {% endif %}
                         {% endif %}
                         <div class="relative group">
-                            <button class="border-transparent text-gray-500 hover:border-primary hover:text-primary inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <button class="border-transparent text-gray-500 hover:border-primary hover:text-primary inline-flex items-center px-2 pt-5 border-b-2 text-sm font-medium">
                                 <span>Career Services</span>
                                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -111,15 +111,14 @@
                                 <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
                                 {% if user.courses_teaching.exists or user.instructor_profile %}
                                     <a href="{% url 'instructor:course_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Courses</a>
-                                
                                     <a href="{% url 'student:dashboard' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Student Dashboard</a>
-                                    {% has_pending_installments user as has_pending %}
-                                    {% if has_pending %}
-                                        <a href="{% url 'courses:installment_payments' %}" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50">
-                                            Pending Installments
-                                            <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">!</span>
-                                        </a>
-                                    {% endif %}
+                                {% endif %}
+                                {% has_pending_installments user as has_pending %}
+                                {% if has_pending %}
+                                    <a href="{% url 'courses:installment_payments' %}" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50">
+                                        Pending Installments
+                                        <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">!</span>
+                                    </a>
                                 {% endif %}
                                 <a href="{% url 'account_logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sign out</a>
                             </div>

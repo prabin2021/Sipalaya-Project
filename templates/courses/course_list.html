@@ -86,7 +86,7 @@
                     <h3 class="text-xl font-semibold mb-2">{{ course.title }}</h3>
                     <p class="text-gray-600 mb-4">{{ course.description|truncatewords:30 }}</p>
                     <div class="flex items-center justify-between">
-                        <span class="text-lg font-bold text-primary">${{ course.price }}</span>
+                        <span class="text-lg font-bold text-primary">Rs {{ course.price }}</span>
                         <a href="{% url 'courses:course_detail' course.slug %}" class="text-primary hover:text-primary-dark">
                             Learn More →
                         </a>

@@ -137,13 +137,43 @@ def enroll_course(request, slug):
 @login_required
 def course_content(request, slug):
     course = get_object_or_404(Course, slug=slug)
-    enrollment = get_object_or_404(Enrollment, student=request.user, course=course)
+    
+    # Check if user is enrolled
+    enrollment = Enrollment.objects.filter(student=request.user, course=course).first()
+    
+    # If not enrolled, redirect to course detail page
+    if not enrollment:
+        messages.info(request, 'Please enroll in the course to access its content.')
+        return redirect('courses:course_detail', slug=slug)
+    
     modules = course.modules.all()
+    
+    # Calculate course progress
+    total_lessons = Lesson.objects.filter(module__course=course).count()
+    completed_lessons = LessonProgress.objects.filter(
+        student=request.user,
+        lesson__module__course=course,
+        completed_at__isnull=False
+    ).count()
+    course_progress = (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
+    
+    # Get progress for each lesson
+    progress_dict = {}
+    for module in modules:
+        for lesson in module.lessons.all():
+            progress = LessonProgress.objects.filter(
+                student=request.user,
+                lesson=lesson,
+                completed_at__isnull=False
+            ).exists()
+            progress_dict[lesson.id] = progress
     
     return render(request, 'courses/course_content.html', {
         'course': course,
         'enrollment': enrollment,
-        'modules': modules
+        'modules': modules,
+        'course_progress': course_progress,
+        'progress_dict': progress_dict
     })
 
 @login_required
@@ -224,8 +254,15 @@ def initiate_payment(request, slug):
     else:
         # Add 10% interest for installment payments
         total_amount = float(course.price) * 1.1
-        amount = total_amount / installments
+        # Calculate per installment amount
+        amount = round(total_amount / installments, 2)
         total_installments = installments
+        
+        # Adjust the last installment to account for rounding
+        last_installment = total_amount - (amount * (installments - 1))
+        if last_installment != amount:
+            # Store the last installment amount in the session
+            request.session['last_installment_amount'] = float(last_installment)
     
     # Generate a unique transaction ID
     transaction_id = f"TXN-{uuid.uuid4().hex[:8].upper()}"
@@ -264,7 +301,7 @@ def initiate_payment(request, slug):
         "website_url": request.build_absolute_uri('/'),
         "amount": amount_in_paisa,
         "purchase_order_id": str(payment.id),
-        "purchase_order_name": f"Course: {course.title}",
+        "purchase_order_name": f"Course: {course.title} - Installment {payment.current_installment} of {total_installments}",
         "customer_info": {
             "name": request.user.get_full_name() or request.user.email,
             "email": request.user.email,
@@ -308,7 +345,10 @@ def initiate_payment(request, slug):
             return render(request, 'courses/payment_redirect.html', {
                 'payment_url': payment_data.get('payment_url'),
                 'amount': amount,
-                'course': course
+                'course': course,
+                'is_installment': payment_type == 'installment',
+                'current_installment': payment.current_installment,
+                'total_installments': total_installments
             })
         else:
             error_message = "Failed to initiate payment. "
@@ -363,11 +403,15 @@ def payment_success(request):
                 payment.status = 'completed'
                 payment.khalti_transaction_id = transaction_id
                 
-                # If this is an installment payment, increment the current installment
+                # If this is an installment payment, handle installment logic
                 if payment.payment_type == 'installment':
-                    payment.current_installment += 1
-                    # Set next installment due date to 30 days from now
-                    payment.next_installment_due = timezone.now() + timezone.timedelta(days=30)
+                    # Check if this was the last installment
+                    if payment.current_installment >= payment.total_installments:
+                        payment.status = 'completed'
+                        payment.next_installment_due = None  # No more installments
+                    else:
+                        payment.status = 'pending'  # Set back to pending for next installment
+                        payment.next_installment_due = timezone.now() + timezone.timedelta(days=30)
                 
                 payment.save()
                 
@@ -476,21 +520,21 @@ def installment_payments(request):
     for payment in installment_payments:
         payment.check_installment_completion()
     
-    # Filter active installments (where current_installment < total_installments)
+    # Filter active installments (where current_installment < total_installments and status is not completed)
     active_installments = installment_payments.filter(
-        status='completed',
-        current_installment__lt=models.F('total_installments')
+        current_installment__lt=models.F('total_installments'),
+        status__in=['pending', 'failed']
     )
     
-    # Get pending installments
+    # Get pending installments (where status is pending)
     pending_installments = installment_payments.filter(
         status='pending'
     )
     
-    # Get completed installments
+    # Get completed installments (where current_installment equals total_installments and status is completed)
     completed_installments = installment_payments.filter(
-        status='completed',
-        current_installment=models.F('total_installments')
+        current_installment=models.F('total_installments'),
+        status='completed'
     )
     
     context = {
@@ -507,10 +551,18 @@ def pay_installment(request, payment_id):
     
     if not payment.can_pay_next_installment():
         messages.error(request, 'This installment cannot be paid at this time.')
-        return redirect('installment_payments')
+        return redirect('courses:installment_payments')
+    
+    # Increment current installment before initiating payment
+    payment.current_installment += 1
+    payment.save()
     
     # Calculate next installment amount
-    amount = payment.get_next_installment_amount()
+    if payment.current_installment == payment.total_installments:
+        # This is the last installment, use the stored amount
+        amount = request.session.get('last_installment_amount', payment.amount)
+    else:
+        amount = payment.amount
     
     # Prepare Khalti payment data
     amount_in_paisa = int(amount * 100)
@@ -525,7 +577,7 @@ def pay_installment(request, payment_id):
         "website_url": request.build_absolute_uri('/'),
         "amount": amount_in_paisa,
         "purchase_order_id": str(payment.id),
-        "purchase_order_name": f"Installment {payment.installment_number + 1} for {payment.course.title}",
+        "purchase_order_name": f"Installment {payment.current_installment} of {payment.total_installments} for {payment.course.title}",
         "customer_info": {
             "name": request.user.get_full_name() or request.user.email,
             "email": request.user.email,
@@ -558,15 +610,23 @@ def pay_installment(request, payment_id):
                 'payment_url': payment_data.get('payment_url'),
                 'amount': amount,
                 'course': payment.course,
-                'is_installment': True
+                'is_installment': True,
+                'current_installment': payment.current_installment,
+                'total_installments': payment.total_installments
             })
         else:
+            # If payment initiation fails, revert the current_installment
+            payment.current_installment -= 1
+            payment.save()
             messages.error(request, 'Failed to initiate payment. Please try again.')
-            return redirect('installment_payments')
+            return redirect('courses:installment_payments')
             
     except requests.RequestException:
+        # If there's an error, revert the current_installment
+        payment.current_installment -= 1
+        payment.save()
         messages.error(request, 'Error connecting to payment gateway. Please try again.')
-        return redirect('installment_payments')
+        return redirect('courses:installment_payments')
 
 @login_required
 def add_testimonial(request):

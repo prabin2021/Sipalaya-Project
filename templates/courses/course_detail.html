@@ -25,7 +25,7 @@
                     <ul class="space-y-2">
                         <li><span class="font-medium">Level:</span> {{ course.get_level_display }}</li>
                         <li><span class="font-medium">Duration:</span> {{ course.get_duration_display }}</li>
-                        <li><span class="font-medium">Price:</span> ${{ course.price }}</li>
+                        <li><span class="font-medium">Price:</span> Rs {{ course.price }}</li>
                         <li><span class="font-medium">Enrollment Deadline:</span> {{ course.enrollment_deadline }}</li>
                     </ul>
                 </div>
@@ -170,7 +170,7 @@
                         <form method="POST" action="{% url 'courses:enroll_course' course.slug %}">
                             {% csrf_token %}
                             <button type="submit" class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
-                                Enroll Now - ${{ course.price }}
+                                Enroll Now - Rs {{ course.price }}
                             </button>
                         </form>
                     {% endif %}

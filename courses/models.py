@@ -177,7 +177,6 @@ class Payment(models.Model):
         """Check if next installment can be paid."""
         return (
             self.payment_type == 'installment' and 
-            self.status == 'completed' and 
             self.current_installment < self.total_installments
         )
     

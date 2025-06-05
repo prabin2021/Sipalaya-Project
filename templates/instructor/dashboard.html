@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Instructor Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Profile Section -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex items-center space-x-4">
+            {% if request.user.instructor_profile.profile_photo %}
+            <img src="{{ request.user.instructor_profile.profile_photo.url }}" alt="Profile Photo" class="h-24 w-24 rounded-full object-cover">
+            {% else %}
+            <div class="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center">
+                <span class="text-2xl text-gray-500">{{ request.user.get_full_name|first }}</span>
+            </div>
+            {% endif %}
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">{{ request.user.get_full_name }}</h2>
+                <p class="text-gray-600">{{ request.user.email }}</p>
+                {% if not request.user.instructor_profile.bio %}
+                <a href="{% url 'instructor:profile_setup' %}" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    Complete Your Profile
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900">Total Courses</h3>
+            <p class="mt-2 text-3xl font-bold text-primary">{{ total_courses }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900">Total Students</h3>
+            <p class="mt-2 text-3xl font-bold text-primary">{{ total_students }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900">Pending Assignments</h3>
+            <p class="mt-2 text-3xl font-bold text-primary">{{ pending_assignments }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900">Course Completion Rate</h3>
+            <p class="mt-2 text-3xl font-bold text-primary">{{ completion_rate }}%</p>
+        </div>
+    </div>
+
+    <!-- Course Management -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Course Management</h2>
+            <a href="{% url 'instructor:course_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Create New Course
+            </a>
+        </div>
+        
+        {% if courses %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for course in courses %}
+            <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ course.title }}</h3>
+                        <p class="text-sm text-gray-600">{{ course.category.name }}</p>
+                        <p class="text-xs text-gray-500">{{ course.get_level_display }}</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="{% url 'instructor:course_edit' course.slug %}" class="text-primary hover:text-primary-dark" title="Edit Course">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                        </a>
+                        <a href="{% url 'instructor:student_progress' course.slug %}" class="text-primary hover:text-primary-dark" title="View Progress">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm text-gray-500">
+                        <span>{{ course.enrollments.count }} Students</span>
+                        <span>{{ course.modules.count }} Modules</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No courses yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by creating your first course.</p>
+            <div class="mt-6">
+                <a href="{% url 'instructor:course_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    Create Course
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Resource Management -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Resource Management</h2>
+            <div class="flex space-x-4">
+                {% if courses %}
+                <a href="{% url 'instructor:course_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Add Resources
+                </a>
+                {% endif %}
+                <a href="{% url 'instructor:course_list' %}" class="text-primary hover:text-primary-dark">View All Resources →</a>
+            </div>
+        </div>
+        
+        {% if resources %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for resource in resources %}
+            <div class="border rounded-lg p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ resource.title }}</h3>
+                        <p class="text-sm text-gray-600">{{ resource.lesson.title }}</p>
+                        <p class="text-xs text-gray-500">{{ resource.get_resource_type_display }}</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        {% if resource.file %}
+                        <a href="{{ resource.file.url }}" class="text-primary hover:text-primary-dark" title="Download">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                        </a>
+                        {% endif %}
+                        {% if resource.url %}
+                        <a href="{{ resource.url }}" target="_blank" class="text-primary hover:text-primary-dark" title="View Link">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No resources yet</h3>
+            <p class="mt-1 text-sm text-gray-500">Go to your courses to add resources to lessons.</p>
+            <div class="mt-6">
+                <a href="{% url 'instructor:course_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    Go to Courses
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Assignment Management -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Assignment Management</h2>
+            <a href="{% url 'instructor:assignment_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Create Assignment
+            </a>
+        </div>
+
+        {% if recent_submissions %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignment</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for submission in recent_submissions %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ submission.student.get_full_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ submission.assignment.title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ submission.assignment.lesson.module.course.title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if submission.status == 'pending' %}bg-yellow-100 text-yellow-800{% elif submission.status == 'graded' %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ submission.status|title }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ submission.submitted_at|date:"M d, Y" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="{% url 'instructor:grade_submission' submission.id %}" class="text-primary hover:text-primary-dark">Grade</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No recent submissions</h3>
+            <p class="mt-1 text-sm text-gray-500">Create assignments to start receiving submissions.</p>
+            <div class="mt-6">
+                <a href="{% url 'instructor:assignment_create' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    Create Assignment
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

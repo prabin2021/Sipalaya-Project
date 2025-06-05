@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <p class="mt-2 text-gray-600">Welcome back, {{ user.get_full_name|default:user.email }}</p>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Enrolled Courses -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900">My Courses</h2>
+                    <a href="{% url 'student:enrolled_courses' %}" class="text-primary hover:text-primary-dark">View All</a>
+                </div>
+                <div class="space-y-4">
+                    {% for enrollment in enrollments %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ enrollment.course.title }}</h3>
+                                <p class="text-sm text-gray-500">{{ enrollment.course.description|truncatewords:20 }}</p>
+                                <!-- Progress Bar -->
+                                <div class="mt-2">
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Progress</span>
+                                        <span>{{ enrollment.progress|floatformat:1 }}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: {% widthratio enrollment.progress 100 100 %}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{% url 'student:course_content' enrollment.course.slug %}" 
+                               class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                                Continue
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500">You haven't enrolled in any courses yet.</p>
+                    <a href="{% url 'courses:course_list' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                        Browse Courses
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Upcoming Assignments -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Upcoming Assignments</h2>
+                <div class="space-y-4">
+                    {% for assignment in upcoming_assignments %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ assignment.title }}</h3>
+                                <p class="text-sm text-gray-500">{{ assignment.lesson.module.course.title }}</p>
+                                <p class="text-sm text-gray-500">Due: {{ assignment.due_date|date:"F j, Y" }}</p>
+                            </div>
+                            <div class="flex flex-col items-end space-y-2">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full {% if assignment.due_date|date:'U' < now|date:'U' %}bg-red-100 text-red-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                    {% if assignment.due_date|date:'U' < now|date:'U' %}
+                                    Overdue
+                                    {% else %}
+                                    Active
+                                    {% endif %}
+                                </span>
+                                <a href="{% url 'courses:submit_assignment' assignment.id %}" 
+                                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                                    Submit Assignment
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500">No upcoming assignments.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Graded Assignments -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mt-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Graded Assignments</h2>
+                <div class="space-y-4">
+                    {% for submission in graded_assignments %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ submission.assignment.title }}</h3>
+                                <p class="text-sm text-gray-500">{{ submission.assignment.lesson.module.course.title }}</p>
+                                {% if submission.feedback %}
+                                <div class="mt-2">
+                                    <p class="text-sm font-medium text-gray-900">Grade: {{ submission.feedback.grade }}/100</p>
+                                    <p class="text-sm text-gray-600 mt-1">{{ submission.feedback.feedback }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                                    Graded
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500">No graded assignments yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                <div class="space-y-4">
+                    {% for record in attendance_records %}
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full {% if record.attended %}bg-green-100 text-green-500{% else %}bg-gray-100 text-gray-500{% endif %}">
+                                {% if record.attended %}
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                {% else %}
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-900">
+                                {{ record.demo_class.course.title }}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                {{ record.demo_class.date|date:"F j, Y" }} at {{ record.demo_class.start_time|time:"g:i A" }}
+                            </p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500">No recent activity.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Stats</h2>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-primary">{{ enrollments.count }}</p>
+                        <p class="text-sm text-gray-500">Courses</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-primary">{{ upcoming_assignments.count }}</p>
+                        <p class="text-sm text-gray-500">Assignments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

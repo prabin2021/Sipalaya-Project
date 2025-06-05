@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Profile - Sipalaya Tech{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Update Your Profile</h1>
+            <p class="text-gray-600">Keep your profile information up to date</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Profile Photo -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-6">
+                        <div class="shrink-0">
+                            {% if user.profile_photo and user.profile_photo.url %}
+                                <img class="h-24 w-24 object-cover rounded-full" 
+                                     src="{{ user.profile_photo.url }}" 
+                                     alt="{{ user.get_full_name }}">
+                            {% else %}
+                                <img class="h-24 w-24 object-cover rounded-full" 
+                                     src="{% static 'images/default-avatar.png' %}" 
+                                     alt="{{ user.get_full_name }}">
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">
+                                Profile Photo
+                            </label>
+                            <div class="mt-1">
+                                {{ form.profile_photo }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Information -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                    {{ form.last_name }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Phone</label>
+                    {{ form.phone }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    {{ form.date_of_birth }}
+                </div>
+
+                <!-- Professional Information -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Education</label>
+                    {{ form.education }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Occupation</label>
+                    {{ form.occupation }}
+                </div>
+
+                <!-- Social Links -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">LinkedIn URL</label>
+                    {{ form.linkedin_url }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">GitHub URL</label>
+                    {{ form.github_url }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Website URL</label>
+                    {{ form.website_url }}
+                </div>
+
+                <!-- Additional Information -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Bio</label>
+                    {{ form.bio }}
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Address</label>
+                    {{ form.address }}
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button type="submit" 
+                        class="px-6 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                    Update Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

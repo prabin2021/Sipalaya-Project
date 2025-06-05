@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ action }} Lesson{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">{{ action }} Lesson</h1>
+            <p class="mt-2 text-gray-600">{{ action }} lesson in {{ course.title }}</p>
+        </div>
+
+        <!-- Lesson Form -->
+        <form method="post" class="bg-white rounded-lg shadow-lg p-6">
+            {% csrf_token %}
+            
+            <!-- Module Selection -->
+            <div class="mb-6">
+                <label for="{{ form.module.id_for_label }}" class="block text-sm font-medium text-gray-700">Module</label>
+                {{ form.module }}
+                {% if form.module.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.module.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Title -->
+            <div class="mb-6">
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">Lesson Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="mb-6">
+                <label for="{{ form.content.id_for_label }}" class="block text-sm font-medium text-gray-700">Lesson Content</label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.content.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Video URL -->
+            <div class="mb-6">
+                <label for="{{ form.video_url.id_for_label }}" class="block text-sm font-medium text-gray-700">Video URL (Optional)</label>
+                {{ form.video_url }}
+                {% if form.video_url.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.video_url.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Order -->
+            <div class="mb-6">
+                <label for="{{ form.order.id_for_label }}" class="block text-sm font-medium text-gray-700">Order in Module</label>
+                {{ form.order }}
+                {% if form.order.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.order.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4">
+                <a href="{% url 'instructor:course_edit' course.slug %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    {{ action }} Lesson
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit Course{% else %}Create Course{% endif %}{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/course-management.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">
+                {% if form.instance.pk %}Edit Course{% else %}Create New Course{% endif %}
+            </h1>
+            <p class="mt-2 text-gray-600">
+                {% if form.instance.pk %}
+                Update your course information and content
+                {% else %}
+                Fill in the details to create your new course
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Course Form -->
+        <form method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-6">
+            {% csrf_token %}
+            
+            <!-- Title -->
+            <div class="mb-6">
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">Course Title</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="mb-6">
+                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Category and Level -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700">Category</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.level.id_for_label }}" class="block text-sm font-medium text-gray-700">Level</label>
+                    {{ form.level }}
+                    {% if form.level.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.level.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Duration -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="{{ form.duration.id_for_label }}" class="block text-sm font-medium text-gray-700">Duration (hours)</label>
+                    {{ form.duration }}
+                    {% if form.duration.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.duration.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.duration_weeks.id_for_label }}" class="block text-sm font-medium text-gray-700">Duration (weeks)</label>
+                    {{ form.duration_weeks }}
+                    {% if form.duration_weeks.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.duration_weeks.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Price and Enrollment Deadline -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700">Price (NPR)</label>
+                    {{ form.price }}
+                    {% if form.price.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.price.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label for="{{ form.enrollment_deadline.id_for_label }}" class="block text-sm font-medium text-gray-700">Enrollment Deadline</label>
+                    {{ form.enrollment_deadline }}
+                    {% if form.enrollment_deadline.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.enrollment_deadline.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Prerequisites -->
+            <div class="mb-6">
+                <label for="{{ form.prerequisites.id_for_label }}" class="block text-sm font-medium text-gray-700">Prerequisites</label>
+                {{ form.prerequisites }}
+                {% if form.prerequisites.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.prerequisites.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Course Image -->
+            <div class="mb-6">
+                <label for="{{ form.image.id_for_label }}" class="block text-sm font-medium text-gray-700">Course Image</label>
+                {% if form.instance.image %}
+                <div class="mt-2">
+                    <img src="{{ form.instance.image.url }}" alt="Current course image" class="h-32 w-32 object-cover rounded-lg">
+                </div>
+                {% endif %}
+                {{ form.image }}
+                {% if form.image.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.image.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-4 mt-6">
+                <a href="{% url 'instructor:course_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Cancel
+                </a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                    {% if form.instance.pk %}Save Changes{% else %}Create Course{% endif %}
+                </button>
+            </div>
+
+            <!-- Course Content Section -->
+            {% if form.instance.pk %}
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Course Content</h3>
+                    <div class="flex space-x-2">
+                        <a href="{% url 'instructor:module_create' form.instance.id %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Add Module
+                        </a>
+                        <a href="{% url 'instructor:lesson_create' course_id=form.instance.id %}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Add Lesson
+                        </a>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    {% for module in form.instance.modules.all %}
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="text-md font-medium text-gray-900">{{ module.title }}</h4>
+                            <div class="flex space-x-2">
+                                <a href="{% url 'instructor:module_edit' module.id %}" class="text-primary hover:text-primary-dark">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                                <form method="post" action="{% url 'instructor:module_delete' module.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            {% for lesson in module.lessons.all %}
+                            <div class="bg-white rounded p-3 shadow-sm">
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">{{ lesson.title }}</p>
+                                        <p class="text-xs text-gray-500">{{ lesson.resources.count }} resources</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="{% url 'instructor:lesson_edit' lesson.id %}" class="text-primary hover:text-primary-dark">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                        </a>
+                                        <form method="post" action="{% url 'instructor:lesson_delete' lesson.id %}" class="inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="text-red-600 hover:text-red-800">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        <a href="{% url 'instructor:resource_upload' lesson.id %}" class="text-primary hover:text-primary-dark" title="Add Resource">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-center py-4">No modules or lessons added yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %} 

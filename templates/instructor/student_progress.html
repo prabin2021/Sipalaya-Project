@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Student Progress - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Student Progress</h1>
+                <p class="mt-2 text-gray-600">{{ course.title }}</p>
+            </div>
+            <a href="{% url 'instructor:course_list' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md">
+                Back to Courses
+            </a>
+        </div>
+    </div>
+
+    <!-- Progress Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Total Students</h3>
+            <p class="text-3xl font-bold text-primary">{{ enrollments|length }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Average Progress</h3>
+            <p class="text-3xl font-bold text-primary">
+                {% with total=0 %}
+                    {% for enrollment in enrollments %}
+                        {% with total=total|add:enrollment.progress %}{% endwith %}
+                    {% endfor %}
+                    {% if enrollments|length > 0 %}
+                        {{ total|divisibleby:enrollments|length|floatformat:1 }}%
+                    {% else %}
+                        0%
+                    {% endif %}
+                {% endwith %}
+            </p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Course Duration</h3>
+            <p class="text-3xl font-bold text-primary">{{ course.get_duration_display }}</p>
+        </div>
+    </div>
+
+    <!-- Student List -->
+    <div class="mt-8">
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-6 border-b">
+                <h2 class="text-xl font-semibold text-gray-900">Student Progress Details</h2>
+            </div>
+            
+            {% if enrollments %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Student
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Enrollment Date
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Progress
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for enrollment in enrollments %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                {% if enrollment.student.profile_photo %}
+                                                    <img class="h-10 w-10 rounded-full" src="{{ enrollment.student.profile_photo.url }}" alt="">
+                                                {% else %}
+                                                    <div class="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+                                                        <span class="text-white font-medium">{{ enrollment.student.get_full_name|make_list|first }}</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ enrollment.student.get_full_name }}
+                                                </div>
+                                                <div class="text-sm text-gray-500">
+                                                    {{ enrollment.student.email }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ enrollment.enrolled_at|date:"M d, Y" }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="w-full bg-gray-200 rounded-full h-2.5 mr-2 dark:bg-gray-700" style="width: 100px;">
+                                                <div class="bg-primary h-2.5 rounded-full" style="width: {{ enrollment.progress }}%"></div>
+                                            </div>
+                                            <span class="text-sm text-gray-600">{{ enrollment.progress|floatformat:1 }}%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if enrollment.progress == 100 %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Completed
+                                            </span>
+                                        {% else %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                In Progress
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-6 text-center text-gray-500">
+                    No students enrolled in this course yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

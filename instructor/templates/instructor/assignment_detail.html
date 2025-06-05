@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ assignment.title }} - Assignment Details{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">{{ assignment.title }}</h1>
+            <div class="space-x-4">
+                <a href="{% url 'instructor:assignment_edit' assignment.id %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Edit Assignment
+                </a>
+                <a href="{% url 'instructor:assignment_submissions' assignment.id %}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    View Submissions
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Assignment Details</h2>
+                    <dl class="space-y-4">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Course</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ assignment.lesson.module.course.title }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Module</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ assignment.lesson.module.title }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Lesson</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ assignment.lesson.title }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Due Date</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ assignment.due_date|date:"F d, Y H:i" }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Status</dt>
+                            <dd class="mt-1">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if assignment.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                    {{ assignment.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Description</h2>
+                    <div class="prose max-w-none">
+                        {{ assignment.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

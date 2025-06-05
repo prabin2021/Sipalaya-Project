@@ -1,0 +1,118 @@
+        <!-- Course Content -->
+        <div class="prose prose-lg max-w-none mb-12">
+            {{ course.description|safe }}
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="border-t border-gray-200 pt-8">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Reviews ({{ course.reviews.count }})</h3>
+                {% if user.is_authenticated and is_enrolled %}
+                <a href="{% url 'courses:add_review' course.slug %}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    Write a Review
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Average Rating -->
+            {% if course.reviews.exists %}
+            <div class="flex items-center gap-4 mb-8">
+                <div class="flex items-center">
+                    {% with avg_rating=course.reviews.all|dictsort:"rating"|last %}
+                    <span class="text-3xl font-bold text-gray-900">{{ avg_rating.rating }}</span>
+                    <span class="text-yellow-400 text-2xl ml-2">★</span>
+                    {% endwith %}
+                </div>
+                <div class="text-sm text-gray-600">
+                    Based on {{ course.reviews.count }} review{{ course.reviews.count|pluralize }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Reviews List -->
+            <div class="space-y-6">
+                {% for review in course.reviews.all %}
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex items-start gap-4">
+                        <img src="{{ review.student.profile_photo.url|default:'/static/images/default-avatar.png' }}" 
+                             alt="{{ review.student.get_full_name }}" 
+                             class="w-10 h-10 rounded-full">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">
+                                        {{ review.student.get_full_name }}
+                                    </h4>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-yellow-400">{{ review.get_rating_display }}</span>
+                                        <span class="text-sm text-gray-500">
+                                            {{ review.created_at|date:"M d, Y" }}
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if user.is_authenticated and review.student == user %}
+                                <div class="flex items-center gap-2">
+                                    <a href="{% url 'courses:add_review' course.slug %}" 
+                                       class="text-blue-600 hover:text-blue-800">Edit</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <p class="text-gray-700">{{ review.content }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-gray-600 text-center py-4">No reviews yet. Be the first to review this course!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Student Reviews</h2>
+            
+            {% if user.is_authenticated and user.enrolled_courses.filter(course=course).exists %}
+            <div class="mb-8">
+                <a href="{% url 'feedback:add_review' course.slug %}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    Write a Review
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="space-y-6">
+                {% for review in course.reviews.all %}
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center mb-4">
+                        {% if review.student.profile_photo %}
+                        <img src="{{ review.student.profile_photo.url }}" alt="{{ review.student.get_full_name }}" 
+                             class="w-12 h-12 rounded-full object-cover">
+                        {% else %}
+                        <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-500 text-lg font-medium">
+                                {{ review.student.get_full_name|make_list|first|upper }}
+                            </span>
+                        </div>
+                        {% endif %}
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium text-gray-900">{{ review.student.get_full_name }}</h3>
+                            <div class="flex items-center">
+                                <div class="flex items-center">
+                                    {% for i in "12345" %}
+                                    <span class="text-yellow-400 {% if forloop.counter <= review.rating %}text-yellow-400{% else %}text-gray-300{% endif %}">★</span>
+                                    {% endfor %}
+                                </div>
+                                <span class="ml-2 text-sm text-gray-500">{{ review.created_at|date:"F j, Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">{{ review.content }}</p>
+                </div>
+                {% empty %}
+                <p class="text-gray-500 text-center py-4">No reviews yet. Be the first to review this course!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

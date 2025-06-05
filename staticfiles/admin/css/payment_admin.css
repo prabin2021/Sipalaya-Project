@@ -1,0 +1,72 @@
+/* Payment Admin Styles */
+.field-installment_number,
+.field-total_installments,
+.field-next_installment_due,
+.field-last_warning_sent {
+    font-weight: bold;
+}
+
+.field-next_installment_due.overdue {
+    color: #dc2626;
+}
+
+.field-last_warning_sent {
+    color: #059669;
+}
+
+/* Status colors */
+.field-status .status-completed {
+    color: #059669;
+}
+
+.field-status .status-pending {
+    color: #d97706;
+}
+
+.field-status .status-failed {
+    color: #dc2626;
+}
+
+/* Payment type colors */
+.field-payment_type .payment-type-full {
+    color: #2563eb;
+}
+
+.field-payment_type .payment-type-installment {
+    color: #7c3aed;
+}
+
+/* Installment progress bar */
+.installment-progress {
+    width: 100%;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+.installment-progress-bar {
+    height: 100%;
+    background-color: #2563eb;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Warning badge */
+.warning-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .field-next_installment_due,
+    .field-last_warning_sent {
+        white-space: nowrap;
+    }
+} 

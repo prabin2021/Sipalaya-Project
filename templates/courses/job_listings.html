@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Job Listings{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Hero Section -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">IT Job Opportunities</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Browse through our curated list of IT sector job openings from our partner companies.
+        </p>
+    </div>
+
+    <!-- Job Listings -->
+    <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 gap-8">
+            {% for job in jobs %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div class="p-6">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ job.title }}</h2>
+                            <div class="flex items-center text-gray-600 mb-4">
+                                <i class="fas fa-building mr-2"></i>
+                                <span>{{ job.company.name }}</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                <span>{{ job.location }}</span>
+                                <span class="mx-2">•</span>
+                                <i class="fas fa-briefcase mr-2"></i>
+                                <span>{{ job.get_job_type_display }}</span>
+                            </div>
+                        </div>
+                        {% if job.salary_range %}
+                        <div class="text-right">
+                            <span class="inline-block bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-full text-sm font-medium">
+                                {{ job.salary_range }}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="prose max-w-none mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+                        <p class="text-gray-600">{{ job.description }}</p>
+                        
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2 mt-4">Requirements</h3>
+                        <p class="text-gray-600">{{ job.requirements }}</p>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t border-gray-200 pt-4">
+                        <div class="text-sm text-gray-500">
+                            <i class="far fa-clock mr-1"></i>
+                            Application Deadline: {{ job.application_deadline|date:"F j, Y" }}
+                        </div>
+                        <a href="mailto:careers@example.com?subject=Application for {{ job.title }} at {{ job.company.name }}" 
+                           class="inline-flex items-center px-6 py-2 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                            Apply Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-12">
+                <i class="fas fa-briefcase text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Active Job Listings</h3>
+                <p class="text-gray-600">Check back later for new opportunities.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="max-w-4xl mx-auto mt-16 text-center">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Want to Learn More?</h2>
+        <p class="text-xl text-gray-600 mb-8">
+            Discover how our placement services can help you land your dream job.
+        </p>
+        <a href="{% url 'courses:placement_services' %}" 
+           class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+            Learn About Our Services
+        </a>
+    </div>
+</div>
+{% endblock %} 
